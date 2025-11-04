@@ -1,0 +1,15 @@
+services:
+  database:
+    image: postgres:latest
+    container_name: mygallery-db
+    environment:
+      POSTGRES_DB: mygallery
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db-data:
