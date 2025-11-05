@@ -23,6 +23,16 @@ type TokenResponsePayload struct {
 	Token string `json:"token"`
 }
 
+type VerifyUserPayload struct {
+	Code  string `json:"code" validate:"required,len=6"`
+	Email string `json:"email" validate:"required,max=255"`
+	Token string `json:"token"`
+}
+
+type VerifyUserResponsePayload struct {
+	Status string `json:"status"`
+}
+
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload RegisterUserPayload
 
@@ -79,6 +89,41 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}(user.ID, user.Email)
 
 	if err := util.JsonResponse(w, http.StatusCreated, tokenResponse); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+	}
+}
+
+func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request) {
+	var payload VerifyUserPayload
+
+	if err := util.ReadJson(w, r, &payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.Validate.Struct(payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := app.twilio.VerifyCode(payload.Email, payload.Code); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := app.store.User.ActivateUser(r.Context(), payload.Token); err != nil {
+		switch err {
+		case internal.ErrorNotFound:
+			util.NotFoundErrorResponse(w, r, err, app.logger)
+		default:
+			util.InternalServerErrorResponse(w, r, err, app.logger)
+		}
+		return
+	}
+
+	verifyUserResponse := VerifyUserResponsePayload{Status: "verified"}
+
+	if err := util.JsonResponse(w, http.StatusOK, verifyUserResponse); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
 }
