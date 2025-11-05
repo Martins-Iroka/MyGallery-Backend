@@ -3,15 +3,15 @@ package user
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 type User struct {
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"-"`
-	IsActive string `json:"created_at"`
+	ID        int64  `json:"id"`
+	Username  string `json:"username"`
+	Email     string `json:"email"`
+	Password  string `json:"-"`
+	IsActive  string `json:"is_verified"`
+	CreatedAt string `json:"created_at"`
 }
 
 type UserStore struct {
@@ -26,7 +26,7 @@ func (s *UserStore) CreateUser(ctx context.Context, tx *sql.Tx, user *User) erro
 	return nil
 }
 
-func (s *UserStore) CreateAndInviteUser(ctx context.Context, user *User, token string, time time.Duration) error {
+func (s *UserStore) CreateAndInviteUser(ctx context.Context, user *User, token string) error {
 	return nil
 }
 

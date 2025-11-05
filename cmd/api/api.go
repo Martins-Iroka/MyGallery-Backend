@@ -1,22 +1,28 @@
-package api
+package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/config"
+	"github.com/Martins-Iroka/MyGallery-Backend/internal"
+	"github.com/Martins-Iroka/MyGallery-Backend/internal/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 )
 
-type Application struct {
-	Config config.Configuration
-	Logger *zap.SugaredLogger
+type application struct {
+	config config.Configuration
+	logger *zap.SugaredLogger
+	twilio *auth.TwilioVerification
+	store  internal.Storage
 }
 
-func (app *Application) Mount() http.Handler {
+func (app *application) Mount() http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -25,20 +31,29 @@ func (app *Application) Mount() http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.Timeout(60 * time.Second))
 
+	r.Route("/v1", func(r chi.Router) {
+
+		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.Addr)
+		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
+
+		r.Route("/authentication", func(r chi.Router) {
+			r.Post("/user", app.registerUserHandler)
+		})
+	})
 	return r
 }
 
-func (app *Application) Run(mux http.Handler) error {
+func (app *application) Run(mux http.Handler) error {
 
 	srv := &http.Server{
-		Addr:         app.Config.Addr,
+		Addr:         app.config.Addr,
 		Handler:      mux,
 		WriteTimeout: time.Second * 30,
 		ReadTimeout:  time.Second * 10,
 		IdleTimeout:  time.Minute,
 	}
 
-	log.Printf("server has started at %s", app.Config.Addr)
+	log.Printf("server has started at %s", app.config.Addr)
 
 	return srv.ListenAndServe()
 }

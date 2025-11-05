@@ -1,0 +1,6 @@
+info:
+  contact: {}
+  description: API for MiGalaria app.
+  title: MyGallery API
+paths: {}
+swagger: "2.0"
