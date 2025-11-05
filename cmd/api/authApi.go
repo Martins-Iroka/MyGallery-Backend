@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"net/http"
+	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/cmd/api/util"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal"
@@ -60,15 +62,21 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		Token: token,
 	}
 
-	if err := app.twilio.SendVerificationCode(user.Email); err != nil {
-		app.logger.Errorw("error sending email", "error", err)
+	go func(userID int64, email string) {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if err := app.twilio.SendVerificationCode(email); err != nil {
+			app.logger.Errorw("error sending verification email", "error", err, "user_id", userID)
 
-		if err := app.store.User.DeleteUser(ctx, user.ID); err != nil {
-			app.logger.Errorw("error deleteing user", "error", err)
+			if deleteErr := app.store.User.DeleteUser(ctx, userID); deleteErr != nil {
+				app.logger.Errorw("error deleting user after email failure",
+					"error", deleteErr, "user_id", userID)
+			} else {
+				app.logger.Infow("user deleted after email failure",
+					"user_id", userID)
+			}
 		}
-		util.InternalServerErrorResponse(w, r, err, app.logger)
-		return
-	}
+	}(user.ID, user.Email)
 
 	if err := util.JsonResponse(w, http.StatusCreated, tokenResponse); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
