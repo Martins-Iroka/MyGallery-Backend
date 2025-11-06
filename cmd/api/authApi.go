@@ -83,7 +83,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	hash := sha256.Sum256([]byte(token))
 	hashToken := hex.EncodeToString(hash[:])
 
-	if err := app.store.User.CreateAndInviteUser(ctx, user, hashToken); err != nil {
+	if err := app.store.User.CreateUserAndVerificationToken(ctx, user, hashToken); err != nil {
 		switch err {
 		case util.ErrorDuplicateEmail, util.ErrorDuplicateUsername:
 			util.BadRequestErrorResponse(w, r, err, app.logger)

@@ -2,7 +2,9 @@ package user
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/util"
 )
@@ -12,7 +14,7 @@ type User struct {
 	Username   string `json:"username"`
 	Email      string `json:"email"`
 	Password   string `json:"-"`
-	IsVerified string `json:"is_verified"`
+	IsVerified bool   `json:"is_verified"`
 	CreatedAt  string `json:"created_at"`
 }
 
@@ -21,16 +23,75 @@ type UserStore struct {
 }
 
 func (s *UserStore) ActivateUser(ctx context.Context, token string) error {
-	return nil
+	return util.WithTransaction(s.Db, ctx, func(tx *sql.Tx) error {
+		user, err := s.getUserByVerificationToken(ctx, tx, token)
+		if err != nil {
+			return err
+		}
+
+		if err := s.updateUser(ctx, tx, user); err != nil {
+			return err
+		}
+
+		if err := s.deleteUserVerificationToken(ctx, tx, user.ID); err != nil {
+			return err
+		}
+
+		return nil
+	})
 }
 
-func (s *UserStore) CreateUser(ctx context.Context, tx *sql.Tx, user *User) error {
+func (s *UserStore) CreateUserAndVerificationToken(ctx context.Context, user *User, token string) error {
+	return util.WithTransaction(s.Db, ctx, func(tx *sql.Tx) error {
+		if err := s.createUser(ctx, tx, user); err != nil {
+			return err
+		}
+
+		if err := s.createUserVerificationToken(ctx, tx, token, user.ID); err != nil {
+			return err
+		}
+
+		return nil
+
+	})
+}
+
+func (s *UserStore) DeleteUser(ctx context.Context, userID int64) error {
+	return util.WithTransaction(s.Db, ctx, func(tx *sql.Tx) error {
+		if err := s.deleteUser(ctx, tx, userID); err != nil {
+			return err
+		}
+
+		if err := s.deleteUserVerificationToken(ctx, tx, userID); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	query := `SELECT id, password FROM users WHERE email = $1 AND is_verified = true`
+
+	ctx = s.getContext(ctx)
+
+	var user User
+
+	if err := s.Db.QueryRowContext(ctx, query, email).Scan(
+		&user.ID,
+		&user.Password,
+	); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (s *UserStore) createUser(ctx context.Context, tx *sql.Tx, user *User) error {
 	query := `
 		INSERT INTO users (email, username, password)
 		VALUES ($1, $2, $3)
 	`
-	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
-	defer cancel()
+	ctx = s.getContext(ctx)
 
 	_, err := tx.ExecContext(ctx, query, user.Email, user.Username, user.Password)
 	if err != nil {
@@ -46,34 +107,10 @@ func (s *UserStore) CreateUser(ctx context.Context, tx *sql.Tx, user *User) erro
 	return nil
 }
 
-func (s *UserStore) CreateAndInviteUser(ctx context.Context, user *User, token string) error {
-	return util.WithTransaction(s.Db, ctx, func(tx *sql.Tx) error {
-		if err := s.CreateUser(ctx, tx, user); err != nil {
-			return err
-		}
-
-		if err := s.createUserInvitation(ctx, tx, token, user.ID); err != nil {
-			return err
-		}
-
-		return nil
-
-	})
-}
-
-func (s *UserStore) DeleteUser(context.Context, int64) error {
-	return nil
-}
-
-func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, error) {
-	return nil, nil
-}
-
-func (s *UserStore) createUserInvitation(ctx context.Context, tx *sql.Tx, token string, userID int64) error {
+func (s *UserStore) createUserVerificationToken(ctx context.Context, tx *sql.Tx, token string, userID int64) error {
 	query := `INSERT INTO users_verification_tracking (token, user_id) VALUES ($1, $2)`
 
-	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
-	defer cancel()
+	ctx = s.getContext(ctx)
 
 	_, err := tx.ExecContext(ctx, query, token, userID)
 	if err != nil {
@@ -81,4 +118,78 @@ func (s *UserStore) createUserInvitation(ctx context.Context, tx *sql.Tx, token 
 	}
 
 	return nil
+}
+
+func (s *UserStore) getUserByVerificationToken(ctx context.Context, tx *sql.Tx, token string) (*User, error) {
+	query := `
+		SELECT u.id FROM users u JOIN users_verification_tracking uv ON u.id = uv.user_id
+		WHERE uv.token = $1
+	`
+	hash := sha256.Sum256([]byte(token))
+	hashToken := hex.EncodeToString(hash[:])
+
+	ctx = s.getContext(ctx)
+
+	var user User
+	if err := tx.QueryRowContext(ctx, query, hashToken).Scan(
+		&user.ID,
+	); err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return nil, util.ErrorNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
+
+}
+
+func (s *UserStore) updateUser(ctx context.Context, tx *sql.Tx, user *User) error {
+	query := `
+		UPDATE users SET is_verified = $1 WHERE id = $2
+	`
+	user.IsVerified = true
+	ctx = s.getContext(ctx)
+
+	_, err := tx.ExecContext(ctx, query, user.IsVerified, user.ID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *UserStore) deleteUserVerificationToken(ctx context.Context, tx *sql.Tx, userID int64) error {
+	query := `DELETE FROM users_verification_tracking WHERE user_id = $1`
+
+	ctx = s.getContext(ctx)
+
+	_, err := tx.ExecContext(ctx, query, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (s *UserStore) deleteUser(ctx context.Context, tx *sql.Tx, userID int64) error {
+	query := `DELETE FROM users WHERE id = $1`
+
+	ctx = s.getContext(ctx)
+
+	_, err := tx.ExecContext(ctx, query, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *UserStore) getContext(ctx context.Context) context.Context {
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	return ctx
 }
