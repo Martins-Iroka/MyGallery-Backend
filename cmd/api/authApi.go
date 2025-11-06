@@ -7,10 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Martins-Iroka/MyGallery-Backend/cmd/api/util"
-	"github.com/Martins-Iroka/MyGallery-Backend/internal"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/auth"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/user"
+	"github.com/Martins-Iroka/MyGallery-Backend/internal/util"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
@@ -86,7 +85,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 
 	if err := app.store.User.CreateAndInviteUser(ctx, user, hashToken); err != nil {
 		switch err {
-		case internal.ErrorDuplicateEmail, internal.ErrorDuplicateUsername:
+		case util.ErrorDuplicateEmail, util.ErrorDuplicateUsername:
 			util.BadRequestErrorResponse(w, r, err, app.logger)
 		default:
 			util.InternalServerErrorResponse(w, r, err, app.logger)
@@ -151,7 +150,7 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 
 	if err := app.store.User.ActivateUser(r.Context(), payload.Token); err != nil {
 		switch err {
-		case internal.ErrorNotFound:
+		case util.ErrorNotFound:
 			util.NotFoundErrorResponse(w, r, err, app.logger)
 		default:
 			util.InternalServerErrorResponse(w, r, err, app.logger)
@@ -193,7 +192,7 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 	user, err := app.store.User.GetUserByEmail(r.Context(), payload.Email)
 	if err != nil {
 		switch err {
-		case internal.ErrorNotFound:
+		case util.ErrorNotFound:
 			util.NotFoundErrorResponse(w, r, err, app.logger)
 		default:
 			util.InternalServerErrorResponse(w, r, err, app.logger)

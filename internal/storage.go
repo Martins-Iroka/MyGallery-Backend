@@ -3,20 +3,8 @@ package internal
 import (
 	"context"
 	"database/sql"
-	"errors"
-	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/user"
-)
-
-var (
-	ErrorNotFound             = errors.New("resource not found")
-	ErrorConflict             = errors.New("conflict found modifying resource")
-	ErrorUserFollowConflict   = errors.New("you're following this user already")
-	ErrorUserUnFollowConflict = errors.New("you're unfollowing this user already")
-	ErrorDuplicateEmail       = errors.New("a user with that email already exists")
-	ErrorDuplicateUsername    = errors.New("a user with that username already exists")
-	QueryTimeoutDuration      = time.Second * 5
 )
 
 type Storage struct {
