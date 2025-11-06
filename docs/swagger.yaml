@@ -1,6 +1,116 @@
+basePath: /v1
+definitions:
+  main.RegisterUserRequestPayload:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 72
+        minLength: 5
+        type: string
+      username:
+        maxLength: 100
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  main.TokenResponsePayload:
+    properties:
+      token:
+        type: string
+    type: object
+  main.VerifyUserRequestPayload:
+    properties:
+      code:
+        type: string
+      email:
+        maxLength: 255
+        type: string
+      token:
+        type: string
+    required:
+    - code
+    - email
+    type: object
+  main.VerifyUserResponsePayload:
+    properties:
+      status:
+        type: string
+    type: object
 info:
-  contact: {}
-  description: API for MiGalaria app.
-  title: MyGallery API
-paths: {}
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: API for MiGalaria, a social network for art lovers.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: MiGalaria API
+paths:
+  /authentication/user:
+    post:
+      consumes:
+      - application/json
+      description: Registers a user
+      parameters:
+      - description: User credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.RegisterUserRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered
+          schema:
+            $ref: '#/definitions/main.TokenResponsePayload'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Registers a user
+      tags:
+      - authentication
+  /authentication/verify:
+    post:
+      consumes:
+      - application/json
+      description: verify user
+      parameters:
+      - description: User verification credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.VerifyUserRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User verified
+          schema:
+            $ref: '#/definitions/main.VerifyUserResponsePayload'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: User verification
+      tags:
+      - authentication
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

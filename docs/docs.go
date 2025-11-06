@@ -5,16 +5,16 @@ package docs
 import "github.com/swaggo/swag/v2"
 
 const docTemplate = `{
-    "schemes": {{ marshal .Schemes }},"swagger":"2.0","info":{"description":"{{escape .Description}}","title":"{{.Title}}","contact":{},"version":"{{.Version}}"},"host":"{{.Host}}","basePath":"{{.BasePath}}","paths":{}}`
+    "schemes": {{ marshal .Schemes }},"swagger":"2.0","info":{"description":"{{escape .Description}}","title":"{{.Title}}","termsOfService":"http://swagger.io/terms/","contact":{"name":"API Support","url":"http://www.swagger.io/support","email":"support@swagger.io"},"license":{"name":"Apache 2.0","url":"http://www.apache.org/licenses/LICENSE-2.0.html"},"version":"{{.Version}}"},"host":"{{.Host}}","basePath":"{{.BasePath}}","paths":{"/authentication/user":{"post":{"description":"Registers a user","consumes":["application/json"],"produces":["application/json"],"tags":["authentication"],"summary":"Registers a user","parameters":[{"description":"User credentials","name":"payload","in":"body","required":true,"schema":{"$ref":"#/definitions/main.RegisterUserRequestPayload"}}],"responses":{"201":{"description":"User registered","schema":{"$ref":"#/definitions/main.TokenResponsePayload"}},"400":{"description":"Bad Request","schema":{}},"500":{"description":"Internal Server Error","schema":{}}}}},"/authentication/verify":{"post":{"description":"verify user","consumes":["application/json"],"produces":["application/json"],"tags":["authentication"],"summary":"User verification","parameters":[{"description":"User verification credentials","name":"payload","in":"body","required":true,"schema":{"$ref":"#/definitions/main.VerifyUserRequestPayload"}}],"responses":{"200":{"description":"User verified","schema":{"$ref":"#/definitions/main.VerifyUserResponsePayload"}},"400":{"description":"Bad Request","schema":{}},"500":{"description":"Internal Server Error","schema":{}}}}}},"definitions":{"main.RegisterUserRequestPayload":{"type":"object","required":["email","password","username"],"properties":{"email":{"type":"string","maxLength":255},"password":{"type":"string","maxLength":72,"minLength":5},"username":{"type":"string","maxLength":100}}},"main.TokenResponsePayload":{"type":"object","properties":{"token":{"type":"string"}}},"main.VerifyUserRequestPayload":{"type":"object","required":["code","email"],"properties":{"code":{"type":"string"},"email":{"type":"string","maxLength":255},"token":{"type":"string"}}},"main.VerifyUserResponsePayload":{"type":"object","properties":{"status":{"type":"string"}}}},"securityDefinitions":{"ApiKeyAuth":{"type":"apiKey","name":"Authorization","in":"header"}}}`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/v1",
 	Schemes:          []string{},
-	Title:            "MyGallery API",
-	Description:      "API for MiGalaria app.",
+	Title:            "MiGalaria API",
+	Description:      "API for MiGalaria, a social network for art lovers.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

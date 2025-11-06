@@ -10,23 +10,22 @@ import (
 
 const version = "1.0.0"
 
-//	@title			MyGallery API
-//	@description	API for MiGalaria app.
+//	@title			MiGalaria API
+//	@description	API for MiGalaria, a social network for art lovers.
+//	@termsOfService	http://swagger.io/terms/
+
+//	@contact.name	API Support
+//	@contact.url	http://www.swagger.io/support
+//	@contact.email	support@swagger.io
+
+//	@license.name	Apache 2.0
+//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @BasePath					/v1
 //
-// @termsOfService http://swagger.io/terms/
-//
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-//
-// @licence.name Apache 2.0
-// @licence.url http://www.apache.org/licenses/LICENSE-2.0.html
-//
-// @BasePath /v1
-//
-// @securityDefinintions.apiKey ApiKeyAuth
-// @in header
-// @name Authorization
+// @securityDefinitions.apikey	ApiKeyAuth
+// @in							header
+// @name						Authorization
 // @description
 func main() {
 	logger := zap.Must(zap.NewProduction()).Sugar()

@@ -13,7 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type RegisterUserPayload struct {
+type RegisterUserRequestPayload struct {
 	Username string `json:"username" validate:"required,max=100"`
 	Email    string `json:"email" validate:"required,max=255"`
 	Password string `json:"password" validate:"required,min=5,max=72"`
@@ -23,7 +23,7 @@ type TokenResponsePayload struct {
 	Token string `json:"token"`
 }
 
-type VerifyUserPayload struct {
+type VerifyUserRequestPayload struct {
 	Code  string `json:"code" validate:"required,len=6"`
 	Email string `json:"email" validate:"required,max=255"`
 	Token string `json:"token"`
@@ -33,8 +33,20 @@ type VerifyUserResponsePayload struct {
 	Status string `json:"status"`
 }
 
+// RegisterUserHandler godoc
+//
+//	@summary		Registers a user
+//	@Description	Registers a user
+//	@Tags			authentication
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body		RegisterUserRequestPayload		true	"User credentials"
+//	@Success		201		{object}	TokenResponsePayload	"User registered"
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Router			/authentication/user [post]
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
-	var payload RegisterUserPayload
+	var payload RegisterUserRequestPayload
 
 	if err := util.ReadJson(w, r, &payload); err != nil {
 		util.BadRequestErrorResponse(w, r, err, app.logger)
@@ -93,8 +105,20 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+// VerifyUserHandler godoc
+//
+//	@summary		User verification
+//	@Description	verify user
+//	@Tags			authentication
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body		VerifyUserRequestPayload	true	"User verification credentials"
+//	@Success		200		{object}	VerifyUserResponsePayload	"User verified"
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Router			/authentication/verify [post]
 func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request) {
-	var payload VerifyUserPayload
+	var payload VerifyUserRequestPayload
 
 	if err := util.ReadJson(w, r, &payload); err != nil {
 		util.BadRequestErrorResponse(w, r, err, app.logger)
