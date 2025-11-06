@@ -21,3 +21,9 @@ func NewStorage(db *sql.DB) Storage {
 		User: &user.UserStore{Db: db},
 	}
 }
+
+func NewMockStorate() Storage {
+	return Storage{
+		User: &user.MockUserStore{},
+	}
+}

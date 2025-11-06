@@ -59,11 +59,11 @@ func main() {
 	)
 
 	app := &application{
-		config: config.Config,
-		logger: logger,
-		twilio: twilio,
-		store:  store,
-		auth:   jwtAuthenticator,
+		config:          config.Config,
+		logger:          logger,
+		otpVerification: twilio,
+		store:           store,
+		auth:            jwtAuthenticator,
 	}
 
 	mux := app.Mount()

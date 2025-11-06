@@ -16,11 +16,11 @@ import (
 )
 
 type application struct {
-	config config.Configuration
-	logger *zap.SugaredLogger
-	twilio *auth.TwilioVerification
-	store  internal.Storage
-	auth   auth.Authenticator
+	config          config.Configuration
+	logger          *zap.SugaredLogger
+	otpVerification auth.OTPVerification
+	store           internal.Storage
+	auth            auth.Authenticator
 }
 
 func (app *application) Mount() http.Handler {
@@ -38,7 +38,7 @@ func (app *application) Mount() http.Handler {
 		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
 
 		r.Route("/authentication", func(r chi.Router) {
-			r.Post("/user", app.registerUserHandler)
+			r.Post("/register", app.registerUserHandler)
 			r.Post("/verify", app.verifyUserHandler)
 			r.Post("/login", app.loginUserHandler)
 		})

@@ -16,7 +16,7 @@ import (
 
 type RegisterUserRequestPayload struct {
 	Username string `json:"username" validate:"required,max=100"`
-	Email    string `json:"email" validate:"required,max=255"`
+	Email    string `json:"email" validate:"required,email,max=255"`
 	Password string `json:"password" validate:"required,min=5,max=72"`
 }
 
@@ -26,8 +26,8 @@ type TokenResponsePayload struct {
 
 type VerifyUserRequestPayload struct {
 	Code  string `json:"code" validate:"required,len=6"`
-	Email string `json:"email" validate:"required,max=255"`
-	Token string `json:"token"`
+	Email string `json:"email" validate:"required,email,max=255"`
+	Token string `json:"token" validate:"required"`
 }
 
 type VerifyUserResponsePayload struct {
@@ -35,7 +35,7 @@ type VerifyUserResponsePayload struct {
 }
 
 type LoginUserRequestPayload struct {
-	Email    string `json:"email" validate:"required,max=255"`
+	Email    string `json:"email" validate:"required,email,max=255"`
 	Password string `json:"password" validate:"required,min=5,max=72"`
 }
 
@@ -50,7 +50,7 @@ type LoginUserRequestPayload struct {
 //	@Success		201		{object}	TokenResponsePayload	"User registered"
 //	@Failure		400		{object}	error
 //	@Failure		500		{object}	error
-//	@Router			/authentication/user [post]
+//	@Router			/authentication/register [post]
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload RegisterUserRequestPayload
 
@@ -100,7 +100,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	go func(userID int64, email string) {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
-		if err := app.twilio.SendVerificationCode(email); err != nil {
+		if err := app.otpVerification.SendVerificationCode(email); err != nil {
 			app.logger.Errorw("error sending verification email", "error", err, "user_id", userID)
 
 			if deleteErr := app.store.User.DeleteUser(ctx, userID); deleteErr != nil {
@@ -143,7 +143,7 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err := app.twilio.VerifyCode(payload.Email, payload.Code); err != nil {
+	if err := app.otpVerification.VerifyCode(payload.Email, payload.Code); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 		return
 	}
