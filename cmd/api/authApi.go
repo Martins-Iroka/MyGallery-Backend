@@ -9,7 +9,9 @@ import (
 
 	"github.com/Martins-Iroka/MyGallery-Backend/cmd/api/util"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal"
+	"github.com/Martins-Iroka/MyGallery-Backend/internal/auth"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/user"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
@@ -31,6 +33,11 @@ type VerifyUserRequestPayload struct {
 
 type VerifyUserResponsePayload struct {
 	Status string `json:"status"`
+}
+
+type LoginUserRequestPayload struct {
+	Email    string `json:"email" validate:"required,max=255"`
+	Password string `json:"password" validate:"required,min=5,max=72"`
 }
 
 // RegisterUserHandler godoc
@@ -58,9 +65,16 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	hashedPassword, err := auth.HashPassword(payload.Password)
+	if err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
 	user := &user.User{
 		Username: payload.Username,
 		Email:    payload.Email,
+		Password: hashedPassword,
 	}
 
 	ctx := r.Context()
@@ -148,6 +162,66 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 	verifyUserResponse := VerifyUserResponsePayload{Status: "verified"}
 
 	if err := util.JsonResponse(w, http.StatusOK, verifyUserResponse); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+	}
+}
+
+// LoginUserHandler godoc
+//
+//	@summary		User login
+//	@Tags			authentication
+//	@Accept			json
+//	@Produce		json
+//	@Param			payload	body		LoginUserRequestPayload	true	"User login credentials"
+//	@Success		200		{object}	Token	"User token"
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Router			/authentication/verify [post]
+func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request) {
+	var payload LoginUserRequestPayload
+
+	if err := util.ReadJson(w, r, &payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.Validate.Struct(payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	user, err := app.store.User.GetUserByEmail(r.Context(), payload.Email)
+	if err != nil {
+		switch err {
+		case internal.ErrorNotFound:
+			util.NotFoundErrorResponse(w, r, err, app.logger)
+		default:
+			util.InternalServerErrorResponse(w, r, err, app.logger)
+		}
+		return
+	}
+
+	if err := auth.ComparePasswords(user.Password, payload.Password); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	claims := jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(app.config.AuthConfig.Exp).Unix(),
+		"iat": time.Now().Unix(),
+		"nbf": time.Now().Unix(),
+		"iss": app.config.AuthConfig.Iss,
+		"aud": app.config.AuthConfig.Iss,
+	}
+
+	token, err := app.auth.GenerateToken(claims)
+	if err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.JsonResponse(w, http.StatusOK, token); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
 }

@@ -33,3 +33,7 @@ func (s *UserStore) CreateAndInviteUser(ctx context.Context, user *User, token s
 func (s *UserStore) DeleteUser(context.Context, int64) error {
 	return nil
 }
+
+func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, error) {
+	return nil, nil
+}

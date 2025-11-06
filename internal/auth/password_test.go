@@ -2,8 +2,10 @@ package auth
 
 import "testing"
 
+const password = "password"
+
 func TestHashPassword(t *testing.T) {
-	hash, err := HashPassword("password")
+	hash, err := HashPassword(password)
 	if err != nil {
 		t.Fatalf("error hashing password: %v", err)
 	}
@@ -12,22 +14,22 @@ func TestHashPassword(t *testing.T) {
 		t.Fatal("expected hash should not be empty")
 	}
 
-	if hash == "password" {
+	if hash == password {
 		t.Fatal("expected hash should not be password")
 	}
 }
 
 func TestComparePasswords(t *testing.T) {
-	hash, err := HashPassword("password")
+	hash, err := HashPassword(password)
 	if err != nil {
 		t.Fatalf("error hashing password: %v", err)
 	}
 
-	if !ComparePasswords(hash, []byte("password")) {
+	if err := ComparePasswords(hash, password); err != nil {
 		t.Fatal("expected password to match hash")
 	}
 
-	if ComparePasswords(hash, []byte("notpassword")) {
-		t.Fatalf("expected password to not match hash")
+	if err := ComparePasswords(hash, "notpassword"); err == nil {
+		t.Fatalf("expected password to not match hash and err to be non-null")
 	}
 }

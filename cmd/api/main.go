@@ -52,11 +52,18 @@ func main() {
 
 	store := internal.NewStorage(db)
 
+	jwtAuthenticator := auth.NewJWTAuthenticator(
+		config.Config.AuthConfig.Secret,
+		config.Config.AuthConfig.Iss,
+		config.Config.AuthConfig.Iss,
+	)
+
 	app := &application{
 		config: config.Config,
 		logger: logger,
 		twilio: twilio,
 		store:  store,
+		auth:   jwtAuthenticator,
 	}
 
 	mux := app.Mount()

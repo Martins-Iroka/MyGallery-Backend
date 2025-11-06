@@ -1,12 +1,17 @@
 package config
 
-import "github.com/Martins-Iroka/MyGallery-Backend/internal/env"
+import (
+	"time"
+
+	"github.com/Martins-Iroka/MyGallery-Backend/internal/env"
+)
 
 type Configuration struct {
 	Addr         string
 	Env          string
 	DB           dbConfig
 	TwilioConfig twilioConfig
+	AuthConfig   authConfig
 }
 
 type dbConfig struct {
@@ -17,6 +22,12 @@ type dbConfig struct {
 
 type twilioConfig struct {
 	AccountSID, AuthToken, ServiceID string
+}
+
+type authConfig struct {
+	Secret string
+	Exp    time.Duration
+	Iss    string
 }
 
 var Config = initConfig()
@@ -35,6 +46,11 @@ func initConfig() Configuration {
 			AccountSID: env.GetString("TWILIO_ACCOUNT_SID", ""),
 			AuthToken:  env.GetString("TWILIO_AUTH_TOKEN", ""),
 			ServiceID:  env.GetString("TWILIO_SID", ""),
+		},
+		AuthConfig: authConfig{
+			Secret: env.GetString("AUTH_TOKEN_SECRET", "test"),
+			Exp:    time.Hour * 24 * 3,
+			Iss:    "MiGalaria",
 		},
 	}
 }
