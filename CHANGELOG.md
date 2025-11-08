@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.1.0...MyGallery-Backend-v1.1.1) (2025-11-08)
+
+
+### Bug Fixes
+
+* remove example logging of photographer names in main.go and update release-type in release-please config to 'go' ([7479fd8](https://github.com/Martins-Iroka/MyGallery-Backend/commit/7479fd8d2016a4f516b18dcd249d4b32ada4341d))
+
 ## [1.1.0](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.0.0...MyGallery-Backend-v1.1.0) (2025-11-08)
 
 
