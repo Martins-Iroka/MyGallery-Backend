@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const version = "1.1.1"
+const version = "1.1.2"
 
 //	@title			MiGalaria API
 //	@description	API for MiGalaria, an application for pictures and short videos.
