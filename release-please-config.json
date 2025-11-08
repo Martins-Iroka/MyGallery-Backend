@@ -1,4 +1,4 @@
 {
-  ".release-type": "simple",
-  ".prerelease": true
+  "release-type": "simple",
+  "prerelease": true
 }
