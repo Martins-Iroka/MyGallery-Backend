@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.1.1...MyGallery-Backend-v1.1.2) (2025-11-08)
+
+
+### Bug Fixes
+
+* add prerelease-type to release-please config for MyGallery-Backend ([a696bf5](https://github.com/Martins-Iroka/MyGallery-Backend/commit/a696bf50d701a21df2e31532fe5f4a9619c35b76))
+
 ## [1.1.1](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.1.0...MyGallery-Backend-v1.1.1) (2025-11-08)
 
 
