@@ -63,9 +63,4 @@ func main() {
 
 	// Successfully parsed the data!
 	log.Printf("Job Success! Fetched %d.", len(pexelsData.Photos))
-
-	// Example of using the data:
-	for i := 0; i < len(pexelsData.Photos); i++ {
-		log.Printf("These are the photographer %s", pexelsData.Photos[i].Photographer)
-	}
 }
