@@ -38,7 +38,7 @@ func TestJWTAuth(t *testing.T) {
 
 	t.Run("validate token generated is correct", func(t *testing.T) {
 
-		token, err := auth.GenerateToken(testClaims)
+		token, _ := auth.GenerateToken(testClaims)
 
 		jwtToken, err := auth.ValidateToken(token)
 
@@ -64,7 +64,7 @@ func TestJWTAuth(t *testing.T) {
 
 	t.Run("validate token generated is wrong", func(t *testing.T) {
 
-		token, err := auth.GenerateToken(nil)
+		token, _ := auth.GenerateToken(nil)
 
 		jwtToken, err := auth.ValidateToken(token)
 
