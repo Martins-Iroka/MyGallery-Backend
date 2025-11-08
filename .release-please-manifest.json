@@ -1,5 +1,5 @@
 {
   ".": "1.0.0",
-  ".release-type": "simple",
+  ".release-type": "go",
   ".prerelease": true 
 }
