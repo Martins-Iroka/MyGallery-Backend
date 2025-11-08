@@ -20,7 +20,6 @@ type Photo struct {
 	Height       int    `json:"height"`
 	URL          string `json:"url"`
 	Photographer string `json:"photographer"`
-	// Add other fields you need, like 'src'
 }
 
 func main() {
@@ -66,7 +65,7 @@ func main() {
 	log.Printf("Job Success! Fetched %d.", len(pexelsData.Photos))
 
 	// Example of using the data:
-	if len(pexelsData.Photos) > 0 {
-		log.Printf("First Photo: ID %d by %s", pexelsData.Photos[0].ID, pexelsData.Photos[0].Photographer)
+	for i := 0; i < len(pexelsData.Photos); i++ {
+		log.Printf("These are the photographer %s", pexelsData.Photos[i].Photographer)
 	}
 }
