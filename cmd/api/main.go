@@ -11,7 +11,7 @@ import (
 const version = "1.0.0"
 
 //	@title			MiGalaria API
-//	@description	API for MiGalaria, a social network for art lovers.
+//	@description	API for MiGalaria, an application for pictures and short videos.
 //	@termsOfService	http://swagger.io/terms/
 
 //	@contact.name	API Support
