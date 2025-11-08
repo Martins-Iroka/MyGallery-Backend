@@ -73,7 +73,8 @@ func (s *UserStore) DeleteUser(ctx context.Context, userID int64) error {
 func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	query := `SELECT id, password FROM users WHERE email = $1 AND is_verified = true`
 
-	ctx = s.getContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
 
 	var user User
 
@@ -89,11 +90,14 @@ func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, er
 func (s *UserStore) createUser(ctx context.Context, tx *sql.Tx, user *User) error {
 	query := `
 		INSERT INTO users (email, username, password)
-		VALUES ($1, $2, $3)
+		VALUES ($1, $2, $3) RETURNING id
 	`
-	ctx = s.getContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
 
-	_, err := tx.ExecContext(ctx, query, user.Email, user.Username, user.Password)
+	err := tx.QueryRowContext(ctx, query, user.Email, user.Username, user.Password).Scan(
+		&user.ID,
+	)
 	if err != nil {
 		switch {
 		case err.Error() == `pq: duplicate key value violates unique constraint "users_email_key"`:
@@ -110,7 +114,8 @@ func (s *UserStore) createUser(ctx context.Context, tx *sql.Tx, user *User) erro
 func (s *UserStore) createUserVerificationToken(ctx context.Context, tx *sql.Tx, token string, userID int64) error {
 	query := `INSERT INTO users_verification_tracking (token, user_id) VALUES ($1, $2)`
 
-	ctx = s.getContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
 
 	_, err := tx.ExecContext(ctx, query, token, userID)
 	if err != nil {
@@ -128,7 +133,8 @@ func (s *UserStore) getUserByVerificationToken(ctx context.Context, tx *sql.Tx, 
 	hash := sha256.Sum256([]byte(token))
 	hashToken := hex.EncodeToString(hash[:])
 
-	ctx = s.getContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
 
 	var user User
 	if err := tx.QueryRowContext(ctx, query, hashToken).Scan(
@@ -151,7 +157,8 @@ func (s *UserStore) updateUser(ctx context.Context, tx *sql.Tx, user *User) erro
 		UPDATE users SET is_verified = $1 WHERE id = $2
 	`
 	user.IsVerified = true
-	ctx = s.getContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
 
 	_, err := tx.ExecContext(ctx, query, user.IsVerified, user.ID)
 	if err != nil {
@@ -163,7 +170,8 @@ func (s *UserStore) updateUser(ctx context.Context, tx *sql.Tx, user *User) erro
 func (s *UserStore) deleteUserVerificationToken(ctx context.Context, tx *sql.Tx, userID int64) error {
 	query := `DELETE FROM users_verification_tracking WHERE user_id = $1`
 
-	ctx = s.getContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
 
 	_, err := tx.ExecContext(ctx, query, userID)
 	if err != nil {
@@ -177,7 +185,8 @@ func (s *UserStore) deleteUserVerificationToken(ctx context.Context, tx *sql.Tx,
 func (s *UserStore) deleteUser(ctx context.Context, tx *sql.Tx, userID int64) error {
 	query := `DELETE FROM users WHERE id = $1`
 
-	ctx = s.getContext(ctx)
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
 
 	_, err := tx.ExecContext(ctx, query, userID)
 	if err != nil {
@@ -185,11 +194,4 @@ func (s *UserStore) deleteUser(ctx context.Context, tx *sql.Tx, userID int64) er
 	}
 
 	return nil
-}
-
-func (s *UserStore) getContext(ctx context.Context) context.Context {
-	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
-	defer cancel()
-
-	return ctx
 }

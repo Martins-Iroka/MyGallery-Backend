@@ -7,11 +7,12 @@ import (
 	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/config"
+	"github.com/Martins-Iroka/MyGallery-Backend/docs"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/auth"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	httpSwagger "github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 	"go.uber.org/zap"
 )
 
@@ -33,7 +34,7 @@ func (app *application) Mount() http.Handler {
 	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Route("/v1", func(r chi.Router) {
-
+		r.Get("/health", app.healthCheckHandler)
 		docsURL := fmt.Sprintf("%s/swagger/doc.json", app.config.Addr)
 		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docsURL)))
 
@@ -47,6 +48,10 @@ func (app *application) Mount() http.Handler {
 }
 
 func (app *application) Run(mux http.Handler) error {
+
+	docs.SwaggerInfo.Version = version
+	docs.SwaggerInfo.Host = app.config.ApiUrl
+	docs.SwaggerInfo.BasePath = "/v1"
 
 	srv := &http.Server{
 		Addr:         app.config.Addr,

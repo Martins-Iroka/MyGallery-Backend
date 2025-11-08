@@ -46,8 +46,8 @@ type LoginUserRequestPayload struct {
 //	@Tags			authentication
 //	@Accept			json
 //	@Produce		json
-//	@Param			payload	body		RegisterUserRequestPayload		true	"User credentials"
-//	@Success		201		{object}	TokenResponsePayload	"User registered"
+//	@Param			payload	body		RegisterUserRequestPayload	true	"User credentials"
+//	@Success		201		{object}	TokenResponsePayload		"User registered"
 //	@Failure		400		{object}	error
 //	@Failure		500		{object}	error
 //	@Router			/authentication/register [post]
@@ -119,17 +119,17 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 }
 
 // VerifyUserHandler godoc
-//
-//	@summary		User verification
-//	@Description	verify user
-//	@Tags			authentication
-//	@Accept			json
-//	@Produce		json
-//	@Param			payload	body		VerifyUserRequestPayload	true	"User verification credentials"
-//	@Success		200		{object}	VerifyUserResponsePayload	"User verified"
-//	@Failure		400		{object}	error
-//	@Failure		500		{object}	error
-//	@Router			/authentication/verify [post]
+
+// @summary		User verification
+// @Description	verify user
+// @Tags			authentication
+// @Accept			json
+// @Produce		json
+// @Param			payload	body		VerifyUserRequestPayload	true	"User verification credentials"
+// @Success		200		{object}	VerifyUserResponsePayload	"User verified"
+// @Failure		400		{object}	error
+// @Failure		500		{object}	error
+// @Router			/authentication/verify [post]
 func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload VerifyUserRequestPayload
 
@@ -167,15 +167,15 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 
 // LoginUserHandler godoc
 //
-//	@summary		User login
-//	@Tags			authentication
-//	@Accept			json
-//	@Produce		json
-//	@Param			payload	body		LoginUserRequestPayload	true	"User login credentials"
-//	@Success		200		{object}	Token	"User token"
-//	@Failure		400		{object}	error
-//	@Failure		500		{object}	error
-//	@Router			/authentication/verify [post]
+//	@summary	User login
+//	@Tags		authentication
+//	@Accept		json
+//	@Produce	json
+//	@Param		payload	body		LoginUserRequestPayload	true	"User login credentials"
+//	@Success	200		{string}	Token					"User token"
+//	@Failure	400		{object}	error
+//	@Failure	500		{object}	error
+//	@Router		/authentication/login [post]
 func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload LoginUserRequestPayload
 

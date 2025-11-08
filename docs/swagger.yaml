@@ -1,5 +1,18 @@
 basePath: /v1
 definitions:
+  main.LoginUserRequestPayload:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+      password:
+        maxLength: 72
+        minLength: 5
+        type: string
+    required:
+    - email
+    - password
+    type: object
   main.RegisterUserRequestPayload:
     properties:
       email:
@@ -34,12 +47,14 @@ definitions:
     required:
     - code
     - email
+    - token
     type: object
   main.VerifyUserResponsePayload:
     properties:
       status:
         type: string
     type: object
+host: localhost:8080
 info:
   contact:
     email: support@swagger.io
@@ -52,7 +67,34 @@ info:
   termsOfService: http://swagger.io/terms/
   title: MiGalaria API
 paths:
-  /authentication/user:
+  /authentication/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User login credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.LoginUserRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: User login
+      tags:
+      - authentication
+  /authentication/register:
     post:
       consumes:
       - application/json
@@ -108,6 +150,19 @@ paths:
       summary: User verification
       tags:
       - authentication
+  /health:
+    get:
+      description: Healthcheck endpoint
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+      summary: Healthcheck
+      tags:
+      - ops
 securityDefinitions:
   ApiKeyAuth:
     in: header

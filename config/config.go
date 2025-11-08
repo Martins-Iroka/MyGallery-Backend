@@ -8,6 +8,7 @@ import (
 
 type Configuration struct {
 	Addr         string
+	ApiUrl       string
 	Env          string
 	DB           dbConfig
 	TwilioConfig twilioConfig
@@ -34,8 +35,9 @@ var Config = initConfig()
 
 func initConfig() Configuration {
 	return Configuration{
-		Addr: env.GetString("ADDR", ":8080"),
-		Env:  env.GetString("ENV", "development"),
+		Addr:   env.GetString("ADDR", ":8080"),
+		ApiUrl: env.GetString("EXTERNAL_URL", "localhost:8080"),
+		Env:    env.GetString("ENV", "development"),
 		DB: dbConfig{
 			Addr:         env.GetString("DB_ADDR", "postgres://admin:adminpassword@localhost/mygallery?sslmode=disable"),
 			MaxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
