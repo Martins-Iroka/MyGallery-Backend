@@ -12,3 +12,7 @@ type Photo struct {
 	Photographer string `json:"photographer"`
 	// Add other fields you need, like 'src'
 }
+
+func main() {
+
+}
