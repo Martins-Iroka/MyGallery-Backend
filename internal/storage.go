@@ -7,6 +7,7 @@ import (
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/photo"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/user"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/util"
+	"github.com/Martins-Iroka/MyGallery-Backend/internal/video"
 )
 
 type Storage struct {
@@ -21,12 +22,18 @@ type Storage struct {
 		CreatePost(context.Context, *photo.PhotoPost) error
 		GetAllPost(context.Context, util.PaginatedPostQuery) ([]photo.PhotoPost, error)
 	}
+	VideoPost interface {
+		CreateVideoPost(context.Context, *video.VideoPost) error
+		CreateVideoDownloadFile(context.Context, *video.VideoDownloadFile, int64) error
+		GetVideoPostAndDownloadFile(context.Context, util.PaginatedPostQuery) ([]video.VideoPostAndDownloadFile, error)
+	}
 }
 
 func NewStorage(db *sql.DB) Storage {
 	return Storage{
 		User:        &user.UserStore{Db: db},
 		PicturePost: &photo.PhotoStore{Db: db},
+		VideoPost:   &video.VideoStore{Db: db},
 	}
 }
 
