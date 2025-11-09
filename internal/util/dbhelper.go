@@ -17,6 +17,11 @@ var (
 	QueryTimeoutDuration      = time.Second * 5
 )
 
+type PaginatedPostQuery struct {
+	Limit  int
+	Offset int
+}
+
 func WithTransaction(db *sql.DB, ctx context.Context, fn func(*sql.Tx) error) error {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {

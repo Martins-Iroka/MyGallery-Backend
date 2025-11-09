@@ -23,7 +23,7 @@ type Photo struct {
 }
 
 func main() {
-	PEXELS_API_URL := "https://api.pexels.com/v1/curated"
+	PEXELS_API_URL := "https://api.pexels.com/v1/curated?per_page=50"
 
 	client := &http.Client{Timeout: 10 * time.Second}
 
