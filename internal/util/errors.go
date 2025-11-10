@@ -13,17 +13,17 @@ func InternalServerErrorResponse(w http.ResponseWriter, r *http.Request, err err
 
 func BadRequestErrorResponse(w http.ResponseWriter, r *http.Request, err error, logger *zap.SugaredLogger) {
 	logWarning("bad request error", r, err, logger)
-	writeJSON(w, http.StatusBadRequest, err.Error())
+	writeJSONError(w, http.StatusBadRequest, err.Error())
 }
 
 func NotFoundErrorResponse(w http.ResponseWriter, r *http.Request, err error, logger *zap.SugaredLogger) {
 	logWarning("not found error", r, err, logger)
-	writeJSON(w, http.StatusNotFound, "not found")
+	writeJSONError(w, http.StatusNotFound, "not found")
 }
 
 func UnauthorizedErrorResponse(w http.ResponseWriter, r *http.Request, err error, logger *zap.SugaredLogger) {
 	logWarning("unauthorized error", r, err, logger)
-	writeJSON(w, http.StatusUnauthorized, "unauthorized")
+	writeJSONError(w, http.StatusUnauthorized, "unauthorized")
 }
 
 func RateLimitExceededErrorResponse(w http.ResponseWriter, r *http.Request, retryAfter string, logger *zap.SugaredLogger) {

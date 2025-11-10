@@ -265,7 +265,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "MiGalaria API",
-	Description:      "API for MiGalaria, a social network for art lovers.",
+	Description:      "API for MiGalaria, an application for pictures and short videos.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

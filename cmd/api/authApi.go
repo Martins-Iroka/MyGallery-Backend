@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"net/http"
 	"time"
 
@@ -201,7 +202,7 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	if err := auth.ComparePasswords(user.Password, payload.Password); err != nil {
-		util.InternalServerErrorResponse(w, r, err, app.logger)
+		util.BadRequestErrorResponse(w, r, errors.New("incorrect username or password"), app.logger)
 		return
 	}
 

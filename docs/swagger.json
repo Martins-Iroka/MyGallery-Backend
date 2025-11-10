@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API for MiGalaria, a social network for art lovers.",
+        "description": "API for MiGalaria, an application for pictures and short videos.",
         "title": "MiGalaria API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {

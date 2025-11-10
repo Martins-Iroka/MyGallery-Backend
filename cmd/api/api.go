@@ -43,6 +43,11 @@ func (app *application) Mount() http.Handler {
 			r.Post("/verify", app.verifyUserHandler)
 			r.Post("/login", app.loginUserHandler)
 		})
+
+		r.Route("/photos", func(r chi.Router) {
+			r.Use(app.authTokenMiddleware)
+			r.Get("/", app.getPhotosHandler)
+		})
 	})
 	return r
 }

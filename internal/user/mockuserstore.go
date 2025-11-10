@@ -24,3 +24,7 @@ func (s *MockUserStore) GetUserByEmail(ctx context.Context, email string) (*User
 	hashedPassword, _ := auth.HashPassword("12345")
 	return &User{ID: 1, Password: hashedPassword}, nil
 }
+
+func (s *MockUserStore) GetUserByID(ctx context.Context, userID int64) (*User, error) {
+	return nil, nil
+}

@@ -87,6 +87,24 @@ func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, er
 	return &user, nil
 }
 
+func (s *UserStore) GetUserByID(ctx context.Context, userID int64) (*User, error) {
+	query := `SELECT id, username, email FROM users u WHERE u.id = $1`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	var user User
+	if err := s.Db.QueryRowContext(ctx, query, userID).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Email,
+	); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (s *UserStore) createUser(ctx context.Context, tx *sql.Tx, user *User) error {
 	query := `
 		INSERT INTO users (email, username, password)

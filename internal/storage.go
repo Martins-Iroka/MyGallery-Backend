@@ -16,6 +16,7 @@ type Storage struct {
 		CreateUserAndVerificationToken(ctx context.Context, user *user.User, token string) error
 		DeleteUser(ctx context.Context, userID int64) error
 		GetUserByEmail(ctx context.Context, email string) (*user.User, error)
+		GetUserByID(ctx context.Context, userID int64) (*user.User, error)
 	}
 
 	PicturePost interface {

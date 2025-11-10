@@ -60,7 +60,7 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: API for MiGalaria, a social network for art lovers.
+  description: API for MiGalaria, an application for pictures and short videos.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
