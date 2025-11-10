@@ -48,6 +48,11 @@ func (app *application) Mount() http.Handler {
 			r.Use(app.authTokenMiddleware)
 			r.Get("/", app.getPhotosHandler)
 		})
+
+		r.Route("/videos", func(r chi.Router) {
+			r.Use(app.authTokenMiddleware)
+			r.Get("/", app.getVideosHandler)
+		})
 	})
 	return r
 }
