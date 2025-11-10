@@ -27,7 +27,7 @@ type PhotoStore struct {
 func (p *PhotoStore) CreatePost(ctx context.Context, photo *PhotoPost) error {
 	query := `
 		INSERT INTO photo_posts (id, photographer, original, large2x, large, medium, small, portrait, landscape, tiny)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) ON CONFLICT (id) DO NOTHING
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
@@ -41,7 +41,7 @@ func (p *PhotoStore) CreatePost(ctx context.Context, photo *PhotoPost) error {
 	)
 
 	if err != nil {
-		return nil
+		return err
 	}
 	return nil
 }

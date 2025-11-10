@@ -23,7 +23,7 @@ type VideoDownloadFile struct {
 type VideoDownloadFileList []VideoDownloadFile
 type VideoPostAndDownloadFile struct {
 	VideoPost
-	files VideoDownloadFileList
+	Files VideoDownloadFileList
 }
 
 type VideoStore struct {
@@ -33,6 +33,7 @@ type VideoStore struct {
 func (v *VideoStore) CreateVideoPost(ctx context.Context, videoPost *VideoPost) error {
 	query := `
 		INSERT INTO video_posts (id, video_url, duration) VALUES ($1, $2, $3)
+		ON CONFLICT (id) DO NOTHING
 	`
 	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
 	defer cancel()
@@ -48,6 +49,7 @@ func (v *VideoStore) CreateVideoPost(ctx context.Context, videoPost *VideoPost) 
 func (v *VideoStore) CreateVideoDownloadFile(ctx context.Context, file *VideoDownloadFile, videoPostId int64) error {
 	query := `
 		INSERT INTO video_download_files (id, video_post_id, video_link, video_size) VALUES ($1, $2, $3, $4)
+		ON CONFLICT (id) DO NOTHING
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
@@ -103,7 +105,7 @@ func (v *VideoStore) GetVideoPostAndDownloadFile(ctx context.Context, paginate u
 		}
 
 		// Unmarshal the JSON array of download files
-		if err := json.Unmarshal(filesJSON, &vp.files); err != nil {
+		if err := json.Unmarshal(filesJSON, &vp.Files); err != nil {
 			return nil, err
 		}
 
