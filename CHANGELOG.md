@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.0](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.1.2...MyGallery-Backend-v1.2.0) (2025-11-10)
+
+
+### Features
+
+* add video post storage functionality with methods for creating and retrieving video posts ([dcd4deb](https://github.com/Martins-Iroka/MyGallery-Backend/commit/dcd4deb427f0e7e6786ce7cfd05ab9b3ddfdead4))
+* enhance video storage functionality with JSON handling for download files ([36c0fe9](https://github.com/Martins-Iroka/MyGallery-Backend/commit/36c0fe931d40e1d7290e9fe4dd5938b919a07b82))
+* implement photo storage and retrieval functionality with pagination ([57624d3](https://github.com/Martins-Iroka/MyGallery-Backend/commit/57624d328f8fd1947fa67559524dcfc7a23ce4c2))
+* implement video and photo seeding functionality with error handling and conflict resolution ([9b028d5](https://github.com/Martins-Iroka/MyGallery-Backend/commit/9b028d57b67c07732eb4d905ae6fe5939f0e6474))
+
 ## [1.1.2](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.1.1...MyGallery-Backend-v1.1.2) (2025-11-08)
 
 
