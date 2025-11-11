@@ -24,12 +24,30 @@ type CreateVideoCommentRequestPayload struct {
 	Content string `json:"content" validate:"required"`
 }
 
+type CreateVideoCommentResponsePayload struct {
+	Created bool `json:"created"`
+}
+
 type VideoCommentResponsePayload struct {
 	Content   string `json:"content" validate:"required"`
 	CreatedAt string `json:"created_at" validate:"required"`
 	Username  string `json:"username" validate:"required"`
 }
 
+// CreateCommentForVideoPost godoc
+//
+//	@summary		Create comment for a video post
+//	@Description	Create comment for a video post
+//	@Tags			videos
+//	@Accept			json
+//	@Produce		json
+//	@Param			postID	path		int									true	"Post ID"
+//	@Param			payload	body		CreateVideoCommentRequestPayload	true	"Comment"
+//	@Success		201		{object}	CreateVideoCommentResponsePayload	"Comment created"
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/videos/{postID}/createcomment [post]
 func (app *application) createVideoCommentHandler(w http.ResponseWriter, r *http.Request) {
 	postID := getVideoIdFromContext(r)
 
@@ -57,11 +75,24 @@ func (app *application) createVideoCommentHandler(w http.ResponseWriter, r *http
 		return
 	}
 
-	if err := util.JsonResponse(w, http.StatusCreated, map[string]string{"created": "true"}); err != nil {
+	if err := util.JsonResponse(w, http.StatusCreated, CreateVideoCommentResponsePayload{true}); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
 }
 
+// GetVideoPostComments godoc
+//
+//	@summary		Get all comments using a postID
+//	@Description	Get all comments using a postID
+//	@Tags			videos
+//	@Accept			json
+//	@Produce		json
+//	@Param			postID	path		int	true	"Post ID"
+//	@Success		200		{object}	[]VideoCommentResponsePayload
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/videos/{postID}/comments [get]
 func (app *application) getVideoCommentByPostID(w http.ResponseWriter, r *http.Request) {
 	postID := getVideoIdFromContext(r)
 
@@ -73,7 +104,7 @@ func (app *application) getVideoCommentByPostID(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	var videoComments []VideoCommentResponsePayload
+	videoComments := []VideoCommentResponsePayload{}
 	for _, vc := range comments {
 		videoComment := &VideoCommentResponsePayload{
 			Content:   vc.Content,
@@ -88,6 +119,20 @@ func (app *application) getVideoCommentByPostID(w http.ResponseWriter, r *http.R
 	}
 }
 
+// GetVideoPosts godoc
+//
+//	@summary		Get all video posts
+//	@Description	Get all video posts
+//	@Tags			videos
+//	@Accept			json
+//	@Produce		json
+//	@Param			limit	query		int	false	"Limit"
+//	@Param			offset	query		int	false	"Offset"
+//	@Success		200		{object}	[]VideoPostResponsePayload
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/videos [get]
 func (app *application) getVideosHandler(w http.ResponseWriter, r *http.Request) {
 
 	p := PaginatedFeedQueryAPI{
@@ -119,14 +164,14 @@ func (app *application) getVideosHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var videos []VideoPostResponsePayload
+	videos := []VideoPostResponsePayload{}
 	for _, v := range videoList {
 		video := &VideoPostResponsePayload{
 			ID:        v.ID,
 			Video_Url: v.Video_Url,
 			Duration:  v.Duration,
 		}
-		var videoDownloadFile []VideoDownloadFile
+		videoDownloadFile := []VideoDownloadFile{}
 		for _, vdf := range v.Files {
 			df := &VideoDownloadFile{
 				vdf.Video_Link,

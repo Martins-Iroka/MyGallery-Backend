@@ -1,5 +1,35 @@
 basePath: /v1
 definitions:
+  main.CreatePhotoCommentRequestPayload:
+    properties:
+      content:
+        type: string
+      userID:
+        type: integer
+    required:
+    - content
+    - userID
+    type: object
+  main.CreatePhotoCommentResponsePayload:
+    properties:
+      created:
+        type: boolean
+    type: object
+  main.CreateVideoCommentRequestPayload:
+    properties:
+      content:
+        type: string
+      userID:
+        type: integer
+    required:
+    - content
+    - userID
+    type: object
+  main.CreateVideoCommentResponsePayload:
+    properties:
+      created:
+        type: boolean
+    type: object
   main.LoginUserRequestPayload:
     properties:
       email:
@@ -12,6 +42,36 @@ definitions:
     required:
     - email
     - password
+    type: object
+  main.PhotoCommentResponsePayload:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      username:
+        type: string
+    type: object
+  main.PhotoPostResponsePayload:
+    properties:
+      id:
+        type: integer
+      landscape:
+        type: string
+      large:
+        type: string
+      large2x:
+        type: string
+      medium:
+        type: string
+      original:
+        type: string
+      photographer:
+        type: string
+      small:
+        type: string
+      tiny:
+        type: string
     type: object
   main.RegisterUserRequestPayload:
     properties:
@@ -52,6 +112,39 @@ definitions:
   main.VerifyUserResponsePayload:
     properties:
       status:
+        type: string
+    type: object
+  main.VideoCommentResponsePayload:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      username:
+        type: string
+    required:
+    - content
+    - created_at
+    - username
+    type: object
+  main.VideoDownloadFile:
+    properties:
+      video_link:
+        type: string
+      video_size:
+        type: integer
+    type: object
+  main.VideoPostResponsePayload:
+    properties:
+      duration:
+        type: integer
+      id:
+        type: integer
+      video_files:
+        items:
+          $ref: '#/definitions/main.VideoDownloadFile'
+        type: array
+      video_url:
         type: string
     type: object
 host: localhost:8080
@@ -163,6 +256,206 @@ paths:
       summary: Healthcheck
       tags:
       - ops
+  /photos:
+    get:
+      consumes:
+      - application/json
+      description: Get all photo posts
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.PhotoPostResponsePayload'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get all photo posts
+      tags:
+      - photos
+  /photos/{postID}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Get all comments using a postID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.PhotoCommentResponsePayload'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get all comments using a postID
+      tags:
+      - photos
+  /photos/{postID}/createcomment:
+    post:
+      consumes:
+      - application/json
+      description: Create comment for a photo post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: integer
+      - description: Comment
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreatePhotoCommentRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Comment created
+          schema:
+            $ref: '#/definitions/main.CreatePhotoCommentResponsePayload'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create comment for a photo post
+      tags:
+      - photos
+  /videos:
+    get:
+      consumes:
+      - application/json
+      description: Get all video posts
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.VideoPostResponsePayload'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get all video posts
+      tags:
+      - videos
+  /videos/{postID}/comments:
+    get:
+      consumes:
+      - application/json
+      description: Get all comments using a postID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.VideoCommentResponsePayload'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Get all comments using a postID
+      tags:
+      - videos
+  /videos/{postID}/createcomment:
+    post:
+      consumes:
+      - application/json
+      description: Create comment for a video post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: integer
+      - description: Comment
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.CreateVideoCommentRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Comment created
+          schema:
+            $ref: '#/definitions/main.CreateVideoCommentResponsePayload'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Create comment for a video post
+      tags:
+      - videos
 securityDefinitions:
   ApiKeyAuth:
     in: header

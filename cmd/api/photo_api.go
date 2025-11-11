@@ -24,13 +24,31 @@ type CreatePhotoCommentRequestPayload struct {
 	Content string `json:"content" validate:"required"`
 }
 
+type CreatePhotoCommentResponsePayload struct {
+	Created bool `json:"created"`
+}
+
 type PhotoCommentResponsePayload struct {
 	Content   string `json:"content"`
 	CreatedAt string `json:"created_at"`
 	Username  string `json:"username"`
 }
 
-func (app *application) createCommentPostHandler(w http.ResponseWriter, r *http.Request) {
+// CreateCommentForPhotoPost godoc
+//
+//	@summary		Create comment for a photo post
+//	@Description	Create comment for a photo post
+//	@Tags			photos
+//	@Accept			json
+//	@Produce		json
+//	@Param			postID	path		int									true	"Post ID"
+//	@Param			payload	body		CreatePhotoCommentRequestPayload	true	"Comment"
+//	@Success		201		{object}	CreatePhotoCommentResponsePayload	"Comment created"
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/photos/{postID}/createcomment [post]
+func (app *application) createCommentForPostHandler(w http.ResponseWriter, r *http.Request) {
 	postID := getPostIDFromContext(r)
 
 	var payload CreatePhotoCommentRequestPayload
@@ -57,11 +75,25 @@ func (app *application) createCommentPostHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	if err := util.JsonResponse(w, http.StatusCreated, map[string]string{"created": "true"}); err != nil {
+	if err := util.JsonResponse(w, http.StatusCreated, CreatePhotoCommentResponsePayload{true}); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
 }
 
+// GetPhotoPosts godoc
+//
+//	@summary		Get all photo posts
+//	@Description	Get all photo posts
+//	@Tags			photos
+//	@Accept			json
+//	@Produce		json
+//	@Param			limit	query		int	false	"Limit"
+//	@Param			offset	query		int	false	"Offset"
+//	@Success		200		{object}	[]PhotoPostResponsePayload
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/photos [get]
 func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request) {
 
 	p := PaginatedFeedQueryAPI{
@@ -93,7 +125,7 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var photos []PhotoPostResponsePayload
+	photos := []PhotoPostResponsePayload{}
 
 	for _, p := range photoList {
 		photoPost := &PhotoPostResponsePayload{
@@ -116,6 +148,19 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+// GetComments godoc
+//
+//	@summary		Get all comments using a postID
+//	@Description	Get all comments using a postID
+//	@Tags			photos
+//	@Accept			json
+//	@Produce		json
+//	@Param			postID	path		int	true	"Post ID"
+//	@Success		200		{object}	[]PhotoCommentResponsePayload
+//	@Failure		400		{object}	error
+//	@Failure		500		{object}	error
+//	@Security		ApiKeyAuth
+//	@Router			/photos/{postID}/comments [get]
 func (app *application) getCommentsByPostID(w http.ResponseWriter, r *http.Request) {
 	postID := getPostIDFromContext(r)
 
@@ -127,7 +172,7 @@ func (app *application) getCommentsByPostID(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var photoComments []PhotoCommentResponsePayload
+	photoComments := []PhotoCommentResponsePayload{}
 	for _, pc := range comments {
 		photoComment := &PhotoCommentResponsePayload{
 			Content:   pc.Content,

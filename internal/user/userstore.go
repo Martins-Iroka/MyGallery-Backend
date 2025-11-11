@@ -82,7 +82,12 @@ func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, er
 		&user.ID,
 		&user.Password,
 	); err != nil {
-		return nil, err
+		switch err {
+		case sql.ErrNoRows:
+			return nil, util.ErrorNotFound
+		default:
+			return nil, err
+		}
 	}
 	return &user, nil
 }
