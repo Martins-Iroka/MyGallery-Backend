@@ -21,3 +21,7 @@ gen-docs:
 .PHONY: build
 build:
 	@go build ./...
+
+.PHONY: staticcheck
+staticcheck:
+	@ staticcheck ./...

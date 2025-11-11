@@ -22,6 +22,8 @@ type Storage struct {
 	PicturePost interface {
 		CreatePost(context.Context, *photo.PhotoPost) error
 		GetAllPost(context.Context, util.PaginatedPostQuery) ([]photo.PhotoPost, error)
+		CreatePhotoComment(context.Context, *photo.PhotoComment) error
+		PostExists(context.Context, int64) (bool, error)
 	}
 	VideoPost interface {
 		CreateVideoPost(context.Context, *video.VideoPost) error

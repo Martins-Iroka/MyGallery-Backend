@@ -20,6 +20,14 @@ type PhotoPost struct {
 	Tiny         string
 }
 
+type PhotoComment struct {
+	ID       int64
+	PostID   int64
+	UserID   int64
+	Content  string
+	CreateAt string
+}
+
 type PhotoStore struct {
 	Db *sql.DB
 }
@@ -81,4 +89,34 @@ func (p *PhotoStore) GetAllPost(ctx context.Context, pagination util.PaginatedPo
 	}
 
 	return photos, nil
+}
+
+func (p *PhotoStore) CreatePhotoComment(ctx context.Context, comment *PhotoComment) error {
+	query := `INSERT INTO photos_comment (post_id, user_id, content) VALUES($1, $2, $3)`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := p.Db.ExecContext(ctx, query, comment.PostID, comment.UserID, comment.Content)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *PhotoStore) PostExists(ctx context.Context, postID int64) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM photo_posts WHERE id = $1)`
+
+	var exists bool
+	err := p.Db.QueryRowContext(ctx, query, postID).Scan(&exists)
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return false, util.ErrorNotFound
+		default:
+			return false, err
+		}
+	}
+	return exists, nil
 }

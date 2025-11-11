@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/Martins-Iroka/MyGallery-Backend/internal/photo"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/util"
 )
 
@@ -16,6 +17,43 @@ type PhotoPostResponsePayload struct {
 	Small        string `json:"small"`
 	Landscape    string `json:"landscape"`
 	Tiny         string `json:"tiny"`
+}
+
+type PhotoCommentRequestPayload struct {
+	UserID  int64  `json:"userID" validate:"required"`
+	Content string `json:"content" validate:"required"`
+}
+
+func (app *application) createCommentPostHandler(w http.ResponseWriter, r *http.Request) {
+	postID := getPostIDFromContext(r)
+
+	var payload PhotoCommentRequestPayload
+	if err := util.ReadJson(w, r, &payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.Validate.Struct(payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	comment := &photo.PhotoComment{
+		Content: payload.Content,
+		PostID:  postID,
+		UserID:  payload.UserID,
+	}
+
+	ctx := r.Context()
+
+	if err := app.store.PicturePost.CreatePhotoComment(ctx, comment); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.JsonResponse(w, http.StatusCreated, map[string]string{"created": "true"}); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+	}
 }
 
 func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,4 +108,9 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 	if err := util.JsonResponse(w, http.StatusOK, photos); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
+}
+
+func getPostIDFromContext(r *http.Request) int64 {
+	postID, _ := r.Context().Value(postCtx).(int64)
+	return postID
 }
