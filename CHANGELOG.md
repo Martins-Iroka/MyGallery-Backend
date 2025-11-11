@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.2.0...MyGallery-Backend-v1.3.0) (2025-11-11)
+
+
+### Features
+
+* add comment functionality for photo posts with database migration ([37ab7ac](https://github.com/Martins-Iroka/MyGallery-Backend/commit/37ab7acde148b4f55df4755912830c56d5c7b052))
+* add functionality to retrieve comments by post ID with new data structures ([1342c76](https://github.com/Martins-Iroka/MyGallery-Backend/commit/1342c766df29313bfbc92bdee0b284f4058d8936))
+* add video retrieval functionality with pagination and error handling ([48e703d](https://github.com/Martins-Iroka/MyGallery-Backend/commit/48e703d489bcdfd459de2b464a4acb4fdf8a1cec))
+* enhance error handling in GetUserByEmail to return custom not found error ([f8de2b3](https://github.com/Martins-Iroka/MyGallery-Backend/commit/f8de2b3d5dab7d738bbc9e108e8aa1cc30db9a3f))
+* implement photo retrieval functionality with pagination and error handling ([a2554e5](https://github.com/Martins-Iroka/MyGallery-Backend/commit/a2554e52844fc9a62ce6c202f30eb19838e3e583))
+* implement video comments functionality with associated database migration ([a617c1c](https://github.com/Martins-Iroka/MyGallery-Backend/commit/a617c1cf9fc5c4b7f379496b77310bbfbbe4b055))
+
 ## [1.2.0](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.1.2...MyGallery-Backend-v1.2.0) (2025-11-10)
 
 
