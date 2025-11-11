@@ -4,9 +4,13 @@ type userKey string
 
 const userContextKey userKey = "user"
 
-type postKey string
+type photoPostKey string
 
-const postCtx postKey = "postID"
+const photoPostCtx photoPostKey = "photoPostID"
+
+type videoPostKey string
+
+const videoPostCtx videoPostKey = "videoPostID"
 
 // func getUserFromContext(r *http.Request) *user.User {
 // 	user, _ := r.Context().Value(userContextKey).(*user.User)

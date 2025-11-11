@@ -23,7 +23,7 @@ func (ss Seed) CreatePhotos(photos []photo.PhotoPost) {
 	log.Printf("CreatePhotos len %d", len(photos))
 	ctx := context.Background()
 	for _, photo := range photos {
-		err := ss.store.PicturePost.CreatePost(ctx, &photo)
+		err := ss.store.PhotoPost.CreatePost(ctx, &photo)
 		if err != nil {
 			log.Fatal(err)
 		}

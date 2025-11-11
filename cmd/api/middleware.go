@@ -55,7 +55,7 @@ func (app *application) authTokenMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func (app *application) postExistContextMiddleware(next http.Handler) http.Handler {
+func (app *application) photoPostExistMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		idParam := chi.URLParam(r, "postID")
 		id, err := strconv.ParseInt(idParam, 10, 64)
@@ -66,7 +66,7 @@ func (app *application) postExistContextMiddleware(next http.Handler) http.Handl
 
 		ctx := r.Context()
 
-		_, err = app.store.PicturePost.PostExists(ctx, id)
+		_, err = app.store.PhotoPost.PostExists(ctx, id)
 		if err != nil {
 			switch err {
 			case util.ErrorNotFound:
@@ -77,7 +77,34 @@ func (app *application) postExistContextMiddleware(next http.Handler) http.Handl
 			return
 		}
 
-		ctx = context.WithValue(ctx, postCtx, id)
+		ctx = context.WithValue(ctx, photoPostCtx, id)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func (app *application) videoPostExistMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		idParam := chi.URLParam(r, "postID")
+		id, err := strconv.ParseInt(idParam, 10, 64)
+		if err != nil {
+			util.InternalServerErrorResponse(w, r, err, app.logger)
+			return
+		}
+
+		ctx := r.Context()
+
+		err = app.store.VideoPost.PostExists(ctx, id)
+		if err != nil {
+			switch err {
+			case util.ErrorNotFound:
+				util.NotFoundErrorResponse(w, r, err, app.logger)
+			default:
+				util.InternalServerErrorResponse(w, r, err, app.logger)
+			}
+			return
+		}
+
+		ctx = context.WithValue(ctx, videoPostCtx, id)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

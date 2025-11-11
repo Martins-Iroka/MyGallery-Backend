@@ -19,7 +19,7 @@ type Storage struct {
 		GetUserByID(ctx context.Context, userID int64) (*user.User, error)
 	}
 
-	PicturePost interface {
+	PhotoPost interface {
 		CreatePost(context.Context, *photo.PhotoPost) error
 		GetAllPost(context.Context, util.PaginatedPostQuery) ([]photo.PhotoPost, error)
 		CreatePhotoComment(context.Context, *photo.PhotoComment) error
@@ -30,14 +30,17 @@ type Storage struct {
 		CreateVideoPost(context.Context, *video.VideoPost) error
 		CreateVideoDownloadFile(context.Context, *video.VideoDownloadFile, int64) error
 		GetVideoPostAndDownloadFile(context.Context, util.PaginatedPostQuery) ([]video.VideoPostAndDownloadFile, error)
+		CreateVideoComment(context.Context, *video.VideoComment) error
+		PostExists(context.Context, int64) error
+		GetCommentsByPostID(context.Context, int64) ([]video.VideoComment, error)
 	}
 }
 
 func NewStorage(db *sql.DB) Storage {
 	return Storage{
-		User:        &user.UserStore{Db: db},
-		PicturePost: &photo.PhotoStore{Db: db},
-		VideoPost:   &video.VideoStore{Db: db},
+		User:      &user.UserStore{Db: db},
+		PhotoPost: &photo.PhotoStore{Db: db},
+		VideoPost: &video.VideoStore{Db: db},
 	}
 }
 

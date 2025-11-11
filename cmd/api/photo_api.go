@@ -19,21 +19,21 @@ type PhotoPostResponsePayload struct {
 	Tiny         string `json:"tiny"`
 }
 
-type CreateCommentRequestPayload struct {
+type CreatePhotoCommentRequestPayload struct {
 	UserID  int64  `json:"userID" validate:"required"`
 	Content string `json:"content" validate:"required"`
 }
 
 type PhotoCommentResponsePayload struct {
-	Content   string `json:"content" validate:"required"`
-	CreatedAt string `json:"created_at" validate:"required"`
-	Username  string `json:"username" validate:"required"`
+	Content   string `json:"content"`
+	CreatedAt string `json:"created_at"`
+	Username  string `json:"username"`
 }
 
 func (app *application) createCommentPostHandler(w http.ResponseWriter, r *http.Request) {
 	postID := getPostIDFromContext(r)
 
-	var payload CreateCommentRequestPayload
+	var payload CreatePhotoCommentRequestPayload
 	if err := util.ReadJson(w, r, &payload); err != nil {
 		util.BadRequestErrorResponse(w, r, err, app.logger)
 		return
@@ -52,7 +52,7 @@ func (app *application) createCommentPostHandler(w http.ResponseWriter, r *http.
 
 	ctx := r.Context()
 
-	if err := app.store.PicturePost.CreatePhotoComment(ctx, comment); err != nil {
+	if err := app.store.PhotoPost.CreatePhotoComment(ctx, comment); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 		return
 	}
@@ -87,7 +87,7 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 
 	ctx := r.Context()
 
-	photoList, err := app.store.PicturePost.GetAllPost(ctx, paginate)
+	photoList, err := app.store.PhotoPost.GetAllPost(ctx, paginate)
 	if err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 		return
@@ -121,7 +121,7 @@ func (app *application) getCommentsByPostID(w http.ResponseWriter, r *http.Reque
 
 	ctx := r.Context()
 
-	comments, err := app.store.PicturePost.GetCommentsByPostID(ctx, postID)
+	comments, err := app.store.PhotoPost.GetCommentsByPostID(ctx, postID)
 	if err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 		return
@@ -144,6 +144,6 @@ func (app *application) getCommentsByPostID(w http.ResponseWriter, r *http.Reque
 }
 
 func getPostIDFromContext(r *http.Request) int64 {
-	postID, _ := r.Context().Value(postCtx).(int64)
+	postID, _ := r.Context().Value(photoPostCtx).(int64)
 	return postID
 }

@@ -20,6 +20,16 @@ type VideoDownloadFile struct {
 	Video_Link    string
 	Video_Size    int32
 }
+
+type VideoComment struct {
+	ID       int64
+	PostID   int64
+	UserID   int64
+	Content  string
+	CreateAt string
+	Username string
+}
+
 type VideoDownloadFileList []VideoDownloadFile
 type VideoPostAndDownloadFile struct {
 	VideoPost
@@ -59,6 +69,20 @@ func (v *VideoStore) CreateVideoDownloadFile(ctx context.Context, file *VideoDow
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (v *VideoStore) CreateVideoComment(ctx context.Context, video *VideoComment) error {
+	query := `INSERT INTO video_comments (post_id, user_id, content) VALUES ($1, $2, $3)`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := v.Db.ExecContext(ctx, query, video.PostID, video.UserID, video.Content)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -117,4 +141,51 @@ func (v *VideoStore) GetVideoPostAndDownloadFile(ctx context.Context, paginate u
 	}
 
 	return results, nil
+}
+
+func (v *VideoStore) PostExists(ctx context.Context, videoID int64) error {
+	query := `SELECT EXISTS(SELECT 1 FROM video_posts WHERE id = $1)`
+
+	_, err := v.Db.ExecContext(ctx, query, videoID)
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return util.ErrorNotFound
+		default:
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (v *VideoStore) GetCommentsByPostID(ctx context.Context, videoID int64) ([]VideoComment, error) {
+	query := `
+		SELECT vc.content, vc.created_at, u.username FROM video_comments vc JOIN users u ON u.id = vc.user_id
+		WHERE vc.post_id = $1 ORDER BY vc.created_at DESC
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	rows, err := v.Db.QueryContext(ctx, query, videoID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	comments := []VideoComment{}
+	for rows.Next() {
+		var vc VideoComment
+		err := rows.Scan(
+			&vc.Content,
+			&vc.CreateAt,
+			&vc.Username,
+		)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, vc)
+	}
+	return comments, nil
 }
