@@ -51,6 +51,7 @@ func (app *application) Mount() http.Handler {
 			r.Route("/{postID}", func(r chi.Router) {
 				r.Use(app.postExistContextMiddleware)
 				r.Post("/createcomment", app.createCommentPostHandler)
+				r.Get("/", app.getCommentsByPostID)
 			})
 		})
 

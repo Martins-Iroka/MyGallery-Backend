@@ -19,15 +19,21 @@ type PhotoPostResponsePayload struct {
 	Tiny         string `json:"tiny"`
 }
 
-type PhotoCommentRequestPayload struct {
+type CreateCommentRequestPayload struct {
 	UserID  int64  `json:"userID" validate:"required"`
 	Content string `json:"content" validate:"required"`
+}
+
+type PhotoCommentResponsePayload struct {
+	Content   string `json:"content" validate:"required"`
+	CreatedAt string `json:"created_at" validate:"required"`
+	Username  string `json:"username" validate:"required"`
 }
 
 func (app *application) createCommentPostHandler(w http.ResponseWriter, r *http.Request) {
 	postID := getPostIDFromContext(r)
 
-	var payload PhotoCommentRequestPayload
+	var payload CreateCommentRequestPayload
 	if err := util.ReadJson(w, r, &payload); err != nil {
 		util.BadRequestErrorResponse(w, r, err, app.logger)
 		return
@@ -106,6 +112,33 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	if err := util.JsonResponse(w, http.StatusOK, photos); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+	}
+}
+
+func (app *application) getCommentsByPostID(w http.ResponseWriter, r *http.Request) {
+	postID := getPostIDFromContext(r)
+
+	ctx := r.Context()
+
+	comments, err := app.store.PicturePost.GetCommentsByPostID(ctx, postID)
+	if err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	var photoComments []PhotoCommentResponsePayload
+	for _, pc := range comments {
+		photoComment := &PhotoCommentResponsePayload{
+			Content:   pc.Content,
+			CreatedAt: pc.CreateAt,
+			Username:  pc.Username,
+		}
+
+		photoComments = append(photoComments, *photoComment)
+	}
+
+	if err := util.JsonResponse(w, http.StatusOK, photoComments); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
 }

@@ -24,6 +24,7 @@ type Storage struct {
 		GetAllPost(context.Context, util.PaginatedPostQuery) ([]photo.PhotoPost, error)
 		CreatePhotoComment(context.Context, *photo.PhotoComment) error
 		PostExists(context.Context, int64) (bool, error)
+		GetCommentsByPostID(context.Context, int64) ([]photo.PhotoComment, error)
 	}
 	VideoPost interface {
 		CreateVideoPost(context.Context, *video.VideoPost) error

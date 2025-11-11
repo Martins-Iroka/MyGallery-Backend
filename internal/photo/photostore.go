@@ -26,6 +26,7 @@ type PhotoComment struct {
 	UserID   int64
 	Content  string
 	CreateAt string
+	Username string
 }
 
 type PhotoStore struct {
@@ -119,4 +120,36 @@ func (p *PhotoStore) PostExists(ctx context.Context, postID int64) (bool, error)
 		}
 	}
 	return exists, nil
+}
+
+func (p *PhotoStore) GetCommentsByPostID(ctx context.Context, postID int64) ([]PhotoComment, error) {
+	query := `
+		SELECT pc.content, pc.created_at, u.username FROM photos_comment pc JOIN users u ON u.id = pc.user_id
+		WHERE pc.post_id = $1 ORDER BY pc.created_at DESC
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	rows, err := p.Db.QueryContext(ctx, query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	comments := []PhotoComment{}
+	for rows.Next() {
+		var pc PhotoComment
+		err := rows.Scan(
+			&pc.Content,
+			&pc.CreateAt,
+			&pc.Username,
+		)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, pc)
+	}
+
+	return comments, nil
 }
