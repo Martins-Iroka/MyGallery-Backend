@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/photo"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/user"
@@ -17,6 +18,10 @@ type Storage struct {
 		DeleteUser(ctx context.Context, userID int64) error
 		GetUserByEmail(ctx context.Context, email string) (*user.User, error)
 		GetUserByID(ctx context.Context, userID int64) (*user.User, error)
+		CreateRefreshToken(ctx context.Context, userID int64, tokenHash string, expiresAt time.Time) error
+		GetUserByRefreshToken(ctx context.Context, tokenHash string) (*user.User, error)
+		RevokeRefreshToken(ctx context.Context, tokenHash string) error
+		DeleteExpiredRefreshTokens(context.Context) error
 	}
 
 	PhotoPost interface {

@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/util"
 )
@@ -108,6 +109,68 @@ func (s *UserStore) GetUserByID(ctx context.Context, userID int64) (*User, error
 	}
 
 	return &user, nil
+}
+
+func (s *UserStore) CreateRefreshToken(ctx context.Context, userID int64, tokenHash string, expiresAt time.Time) error {
+	query := `
+		INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
+		VALUES ($1, $2, $3)
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := s.Db.ExecContext(ctx, query, userID, tokenHash, expiresAt)
+	return err
+}
+
+func (s *UserStore) GetUserByRefreshToken(ctx context.Context, tokenHash string) (*User, error) {
+	query := `
+		SELECT u.id FROM users u INNER JOIN refresh_tokens rt ON u.id = rt.user_id
+		WHERE rt.token_hash = $1 AND rt.expires_at > NOW() AND rt.revoked = FALSE
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	var user User
+	err := s.Db.QueryRowContext(ctx, query, tokenHash).Scan(
+		&user.ID,
+	)
+
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			return nil, util.ErrorNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	return &user, nil
+}
+
+func (s *UserStore) RevokeRefreshToken(ctx context.Context, tokenHash string) error {
+	query := `
+		UPDATE refresh_tokens SET revoked = TRUE WHERE token_hash = $1
+	`
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := s.Db.ExecContext(ctx, query, tokenHash)
+	return err
+}
+
+func (s *UserStore) DeleteExpiredRefreshTokens(ctx context.Context) error {
+	query := `
+		DELETE FROM refresh_tokens WHERE expires_at < NOW() OR revoked = TRUE
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	_, err := s.Db.ExecContext(ctx, query)
+	return err
 }
 
 func (s *UserStore) createUser(ctx context.Context, tx *sql.Tx, user *User) error {

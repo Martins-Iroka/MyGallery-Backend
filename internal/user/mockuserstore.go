@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/auth"
 )
@@ -27,4 +28,20 @@ func (s *MockUserStore) GetUserByEmail(ctx context.Context, email string) (*User
 
 func (s *MockUserStore) GetUserByID(ctx context.Context, userID int64) (*User, error) {
 	return nil, nil
+}
+
+func (s *MockUserStore) CreateRefreshToken(ctx context.Context, userID int64, tokenHash string, expiresAt time.Time) error {
+	return nil
+}
+
+func (s *MockUserStore) GetUserByRefreshToken(ctx context.Context, tokenHash string) (*User, error) {
+	return nil, nil
+}
+
+func (s *MockUserStore) RevokeRefreshToken(ctx context.Context, tokenHash string) error {
+	return nil
+}
+
+func (s *MockUserStore) DeleteExpiredRefreshTokens(context.Context) error {
+	return nil
 }

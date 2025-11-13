@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -28,6 +30,15 @@ func (a *JWTAuthenticator) GenerateToken(claims jwt.Claims) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func (a *JWTAuthenticator) GenerateRefreshToken() (string, error) {
+	token := make([]byte, 32)
+	_, err := rand.Read(token)
+	if err != nil {
+		return "", err
+	}
+	return base64.URLEncoding.EncodeToString(token), nil
 }
 
 func (a *JWTAuthenticator) ValidateToken(token string) (*jwt.Token, error) {
