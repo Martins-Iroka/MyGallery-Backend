@@ -26,6 +26,10 @@ func (t TestAuthenticator) GenerateToken(claims jwt.Claims) (string, error) {
 	return token.SignedString([]byte(secret))
 }
 
+func (t TestAuthenticator) GenerateRefreshToken() (string, error) {
+	return "", nil
+}
+
 func (t TestAuthenticator) ValidateToken(token string) (*jwt.Token, error) {
 	return jwt.Parse(token, func(t *jwt.Token) (any, error) {
 		return []byte(secret), nil

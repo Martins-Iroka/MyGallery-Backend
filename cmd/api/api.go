@@ -52,6 +52,8 @@ func (app *application) Mount() http.Handler {
 			r.Post("/register", app.registerUserHandler)
 			r.Post("/verify", app.verifyUserHandler)
 			r.Post("/login", app.loginUserHandler)
+			r.Post("/refresh", app.refreshTokenHandler)
+			r.Post("/logout", app.logoutHandler)
 		})
 
 		r.Route("/photos", func(r chi.Router) {

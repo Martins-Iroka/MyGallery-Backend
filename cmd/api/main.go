@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"time"
+
 	"github.com/Martins-Iroka/MyGallery-Backend/config"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal"
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/auth"
@@ -69,5 +72,24 @@ func main() {
 
 	mux := app.Mount()
 
+	app.startCleanupJob()
+
 	logger.Fatal(app.Run(mux))
+}
+
+func (app *application) startCleanupJob() {
+	go func() {
+		app.store.User.DeleteExpiredRefreshTokens(context.Background())
+
+		ticker := time.NewTicker(24 * time.Hour)
+		defer ticker.Stop()
+
+		for range ticker.C {
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			if err := app.store.User.DeleteExpiredRefreshTokens(ctx); err != nil {
+				app.logger.Error("Failed to delete expired tokens", "error", err)
+			}
+			cancel()
+		}
+	}()
 }

@@ -40,6 +40,25 @@ type LoginUserRequestPayload struct {
 	Password string `json:"password" validate:"required,min=5,max=72"`
 }
 
+type LoginResponsePayload struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int64  `json:"expires_in"`
+}
+
+type RefreshTokenRequestPayload struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
+}
+
+type RefreshTokenResponsePayload struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
+}
+
+type LogoutRequestPayload struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
+}
+
 // RegisterUserHandler godoc
 //
 //	@summary		Registers a user
@@ -215,13 +234,134 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 		"aud": app.config.AuthConfig.Iss,
 	}
 
-	token, err := app.auth.GenerateToken(claims)
+	accessToken, err := app.auth.GenerateToken(claims)
 	if err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 		return
 	}
 
-	if err := util.JsonResponse(w, http.StatusOK, token); err != nil {
+	refreshToken, err := app.auth.GenerateRefreshToken()
+	if err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	hash := sha256.Sum256([]byte(refreshToken))
+	tokenHash := hex.EncodeToString(hash[:])
+
+	refreshExpiry := time.Now().Add(7 * 24 * time.Hour)
+
+	if err := app.store.User.CreateRefreshToken(r.Context(), user.ID, tokenHash, refreshExpiry); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	response := LoginResponsePayload{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+		ExpiresIn:    int64(app.config.AuthConfig.Exp.Seconds()),
+	}
+
+	if err := util.JsonResponse(w, http.StatusOK, response); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
+}
+
+// RefreshTokenHandler godoc
+//
+// @Summary Refresh access token
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param payload body RefreshTokenRequestPayload true "Refresh token"
+// @Success 200 {object} RefreshTokenResponsePayload "New access token"
+// @Failure 400 {object} error
+// @Failure 401 {object} error
+// @Failure 500 {object} error
+// @Router /authentication/refresh [post]
+func (app *application) refreshTokenHandler(w http.ResponseWriter, r *http.Request) {
+	var payload RefreshTokenRequestPayload
+
+	if err := util.ReadJson(w, r, &payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.Validate.Struct(payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	hash := sha256.Sum256([]byte(payload.RefreshToken))
+	tokenHash := hex.EncodeToString(hash[:])
+
+	user, err := app.store.User.GetUserByRefreshToken(r.Context(), tokenHash)
+	if err != nil {
+		switch err {
+		case util.ErrorNotFound:
+			util.UnauthorizedErrorResponse(w, r, errors.New("invalid or expired refresh token"), app.logger)
+		default:
+			util.InternalServerErrorResponse(w, r, err, app.logger)
+		}
+		return
+	}
+
+	claims := jwt.MapClaims{
+		"sub": user.ID,
+		"exp": time.Now().Add(app.config.AuthConfig.Exp).Unix(),
+		"iat": time.Now().Unix(),
+		"nbf": time.Now().Unix(),
+		"iss": app.config.AuthConfig.Iss,
+		"aud": app.config.AuthConfig.Iss,
+	}
+
+	accessToken, err := app.auth.GenerateToken(claims)
+	if err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	response := RefreshTokenResponsePayload{
+		AccessToken: accessToken,
+		ExpiresIn:   int64(app.config.AuthConfig.Exp.Seconds()),
+	}
+
+	if err := util.JsonResponse(w, http.StatusOK, response); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+	}
+}
+
+// LogoutHandler godoc
+//
+// @Summary Logout user
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param payload body LogoutRequestPayload true "Refresh token to revoke"
+// @Success 204 "No content"
+// @Failure 400 {object} error
+// @Failure 500 {object} error
+// @Router /authentication/logout [post]
+func (app *application) logoutHandler(w http.ResponseWriter, r *http.Request) {
+	var payload LogoutRequestPayload
+
+	if err := util.ReadJson(w, r, &payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.Validate.Struct(payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	hash := sha256.Sum256([]byte(payload.RefreshToken))
+	tokenHash := hex.EncodeToString(hash[:])
+
+	if err := app.store.User.RevokeRefreshToken(r.Context(), tokenHash); err != nil {
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
