@@ -269,16 +269,16 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 
 // RefreshTokenHandler godoc
 //
-// @Summary Refresh access token
-// @Tags authentication
-// @Accept json
-// @Produce json
-// @Param payload body RefreshTokenRequestPayload true "Refresh token"
-// @Success 200 {object} RefreshTokenResponsePayload "New access token"
-// @Failure 400 {object} error
-// @Failure 401 {object} error
-// @Failure 500 {object} error
-// @Router /authentication/refresh [post]
+//	@Summary	Refresh access token
+//	@Tags		authentication
+//	@Accept		json
+//	@Produce	json
+//	@Param		payload	body		RefreshTokenRequestPayload	true	"Refresh token"
+//	@Success	200		{object}	RefreshTokenResponsePayload	"New access token"
+//	@Failure	400		{object}	error
+//	@Failure	401		{object}	error
+//	@Failure	500		{object}	error
+//	@Router		/authentication/refresh [post]
 func (app *application) refreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var payload RefreshTokenRequestPayload
 
@@ -333,15 +333,15 @@ func (app *application) refreshTokenHandler(w http.ResponseWriter, r *http.Reque
 
 // LogoutHandler godoc
 //
-// @Summary Logout user
-// @Tags authentication
-// @Accept json
-// @Produce json
-// @Param payload body LogoutRequestPayload true "Refresh token to revoke"
-// @Success 204 "No content"
-// @Failure 400 {object} error
-// @Failure 500 {object} error
-// @Router /authentication/logout [post]
+//	@Summary	Logout user
+//	@Tags		authentication
+//	@Accept		json
+//	@Produce	json
+//	@Param		payload	body	LogoutRequestPayload	true	"Refresh token to revoke"
+//	@Success	204		"No content"
+//	@Failure	400		{object}	error
+//	@Failure	500		{object}	error
+//	@Router		/authentication/logout [post]
 func (app *application) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	var payload LogoutRequestPayload
 

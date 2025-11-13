@@ -43,6 +43,13 @@ definitions:
     - email
     - password
     type: object
+  main.LogoutRequestPayload:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
   main.PhotoCommentResponsePayload:
     properties:
       content:
@@ -72,6 +79,20 @@ definitions:
         type: string
       tiny:
         type: string
+    type: object
+  main.RefreshTokenRequestPayload:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  main.RefreshTokenResponsePayload:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
     type: object
   main.RegisterUserRequestPayload:
     properties:
@@ -185,6 +206,61 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: User login
+      tags:
+      - authentication
+  /authentication/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token to revoke
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.LogoutRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Logout user
+      tags:
+      - authentication
+  /authentication/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh token
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.RefreshTokenRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New access token
+          schema:
+            $ref: '#/definitions/main.RefreshTokenResponsePayload'
+        "400":
+          description: Bad Request
+          schema: {}
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Refresh access token
       tags:
       - authentication
   /authentication/register:
