@@ -15,6 +15,7 @@ type PhotoPostResponsePayload struct {
 	Large        string `json:"large"`
 	Medium       string `json:"medium"`
 	Small        string `json:"small"`
+	Portrait     string `json:"portrait"`
 	Landscape    string `json:"landscape"`
 	Tiny         string `json:"tiny"`
 }
@@ -136,6 +137,7 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 			Large:        p.Large,
 			Medium:       p.Medium,
 			Small:        p.Small,
+			Portrait:     p.Portrait,
 			Landscape:    p.Landscape,
 			Tiny:         p.Tiny,
 		}
