@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.4.0](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.3.0...MyGallery-Backend-v1.4.0) (2025-11-15)
+
+
+### Features
+
+* add CORS middleware to API for enhanced security and cross-origin requests ([5b2831d](https://github.com/Martins-Iroka/MyGallery-Backend/commit/5b2831d455aca12a4708c549d4c19e47b1e80b16))
+* add migration scripts to create and drop indexes for users, photos, and videos ([b0c039f](https://github.com/Martins-Iroka/MyGallery-Backend/commit/b0c039fc86fc255786964d0f21064066d5a8c514))
+* add portrait field to PhotoPostResponsePayload and update getPhotosHandler ([e78698d](https://github.com/Martins-Iroka/MyGallery-Backend/commit/e78698d096bdd95c18ec22b71d4016204b8f0809))
+* add refresh and logout functionality with corresponding handlers and payloads ([fd376b4](https://github.com/Martins-Iroka/MyGallery-Backend/commit/fd376b4c56aeac450a1523fc5e37e8fcdbe77423))
+* add Swagger documentation for logout and refresh token endpoints ([8dd1ecf](https://github.com/Martins-Iroka/MyGallery-Backend/commit/8dd1ecf32984d9f22b0ed4b394a6cb8032568bd4))
+* add video_image field to VideoPost and update related database migrations ([9ce5f4d](https://github.com/Martins-Iroka/MyGallery-Backend/commit/9ce5f4da84324e7217d505a506869f8f8f63559c))
+* implement refresh token functionality with database support ([5bfb6fc](https://github.com/Martins-Iroka/MyGallery-Backend/commit/5bfb6fc312b46aff19bf216b14627b6a2189d585))
+
 ## [1.3.0](https://github.com/Martins-Iroka/MyGallery-Backend/compare/MyGallery-Backend-v1.2.0...MyGallery-Backend-v1.3.0) (2025-11-11)
 
 
