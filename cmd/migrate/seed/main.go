@@ -42,10 +42,11 @@ type PexelsResponse2 struct {
 }
 
 type VideoAPI struct {
-	ID        int64                  `json:"id"`
-	Video_Url string                 `json:"url"`
-	Duration  int                    `json:"duration"`
-	Files     []VideoDownloadFileAPI `json:"video_files"`
+	ID          int64                  `json:"id"`
+	Video_Image string                 `json:"image"`
+	Video_Url   string                 `json:"url"`
+	Duration    int                    `json:"duration"`
+	Files       []VideoDownloadFileAPI `json:"video_files"`
 }
 
 type VideoDownloadFileAPI struct {
@@ -160,9 +161,10 @@ func main() {
 	var videos []video.VideoPostAndDownloadFile
 	for _, v := range pexelsData2.Video {
 		videoPost := video.VideoPost{
-			ID:        v.ID,
-			Video_Url: v.Video_Url,
-			Duration:  v.Duration,
+			ID:          v.ID,
+			Video_Image: v.Video_Image,
+			Video_Url:   v.Video_Url,
+			Duration:    v.Duration,
 		}
 		var videoDFs []video.VideoDownloadFile
 		for _, vdf := range v.Files {

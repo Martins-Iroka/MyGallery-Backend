@@ -1,0 +1,1 @@
+ALTER TABLE video_posts DROP COLUMN video_image;

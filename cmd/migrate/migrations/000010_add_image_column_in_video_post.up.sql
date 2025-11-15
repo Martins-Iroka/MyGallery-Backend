@@ -1,0 +1,1 @@
+ALTER TABLE video_posts ADD COLUMN video_image text NOT NULL DEFAULT 'https://placeholder.com/default.jpg' CHECK (video_image ~ '^https?://');

@@ -9,9 +9,10 @@ import (
 )
 
 type VideoPost struct {
-	ID        int64
-	Video_Url string
-	Duration  int
+	ID          int64
+	Video_Image string
+	Video_Url   string
+	Duration    int
 }
 
 type VideoDownloadFile struct {
@@ -42,13 +43,14 @@ type VideoStore struct {
 
 func (v *VideoStore) CreateVideoPost(ctx context.Context, videoPost *VideoPost) error {
 	query := `
-		INSERT INTO video_posts (id, video_url, duration) VALUES ($1, $2, $3)
-		ON CONFLICT (id) DO NOTHING
+		INSERT INTO video_posts (id, video_image, video_url, duration) VALUES ($1, $2, $3, $4)
+		ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id, video_image = EXCLUDED.video_image, video_url = EXCLUDED.video_url,
+    	duration = EXCLUDED.duration
 	`
 	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
 	defer cancel()
 
-	_, err := v.Db.ExecContext(ctx, query, videoPost.ID, videoPost.Video_Url, videoPost.Duration)
+	_, err := v.Db.ExecContext(ctx, query, videoPost.ID, videoPost.Video_Image, videoPost.Video_Url, videoPost.Duration)
 
 	if err != nil {
 		return err
