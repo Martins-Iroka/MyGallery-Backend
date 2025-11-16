@@ -14,7 +14,8 @@ const path = "/v1/authentication"
 func TestRegisterUserHandler(t *testing.T) {
 	app := newTestApplication(t, config.Configuration{})
 	mux := app.Mount()
-
+	register := path + "/register"
+	email := "test@example.com"
 	t.Run("should return 400 as a result of wrong email format", func(t *testing.T) {
 		payload := RegisterUserRequestPayload{
 			Username: "testuser",
@@ -22,7 +23,7 @@ func TestRegisterUserHandler(t *testing.T) {
 			Password: "password123",
 		}
 		body, _ := json.Marshal(payload)
-		req, err := http.NewRequest(http.MethodPost, path+"/register", bytes.NewReader(body))
+		req, err := http.NewRequest(http.MethodPost, register, bytes.NewReader(body))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -45,7 +46,7 @@ func TestRegisterUserHandler(t *testing.T) {
 			Unknown:  "unknown",
 		}
 		body, _ := json.Marshal(payload)
-		req, err := http.NewRequest(http.MethodPost, path+"/register", bytes.NewReader(body))
+		req, err := http.NewRequest(http.MethodPost, register, bytes.NewReader(body))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -58,11 +59,11 @@ func TestRegisterUserHandler(t *testing.T) {
 	t.Run("should return 400 as a result of password being less than min", func(t *testing.T) {
 		payload := RegisterUserRequestPayload{
 			Username: "testuser",
-			Email:    "test@example.com",
+			Email:    email,
 			Password: "123",
 		}
 		body, _ := json.Marshal(payload)
-		req, err := http.NewRequest(http.MethodPost, path+"/register", bytes.NewReader(body))
+		req, err := http.NewRequest(http.MethodPost, register, bytes.NewReader(body))
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -75,11 +76,11 @@ func TestRegisterUserHandler(t *testing.T) {
 	t.Run("should return 201", func(t *testing.T) {
 		payload := RegisterUserRequestPayload{
 			Username: "testuser",
-			Email:    "test@example.com",
+			Email:    email,
 			Password: "123456",
 		}
 		body, _ := json.Marshal(payload)
-		req, err := http.NewRequest(http.MethodPost, path+"/register", bytes.NewReader(body))
+		req, err := http.NewRequest(http.MethodPost, path+register, bytes.NewReader(body))
 		if err != nil {
 			t.Fatalf("error from new request %s", err)
 		}
@@ -95,6 +96,7 @@ func TestVerifyUserHandler(t *testing.T) {
 	mux := app.Mount()
 
 	verifyPath := path + "/verify"
+	email := "test@g.com"
 
 	t.Run("should return 400 because of an unknown field", func(t *testing.T) {
 		payload := struct {
@@ -104,7 +106,7 @@ func TestVerifyUserHandler(t *testing.T) {
 			Unknown string `json:"unknown"`
 		}{
 			Code:    "123458",
-			Email:   "test@g.com",
+			Email:   email,
 			Token:   "token",
 			Unknown: "unknown",
 		}
@@ -126,7 +128,7 @@ func TestVerifyUserHandler(t *testing.T) {
 			Token string `json:"token" validate:"required"`
 		}{
 			Code:  "1234",
-			Email: "test@g.com",
+			Email: email,
 			Token: "token",
 		}
 		body, _ := json.Marshal(payload)
@@ -143,7 +145,7 @@ func TestVerifyUserHandler(t *testing.T) {
 	t.Run("should return 400 because code length is greater than 6", func(t *testing.T) {
 		payload := VerifyUserRequestPayload{
 			Code:  "12345678",
-			Email: "test@g.com",
+			Email: email,
 			Token: "token",
 		}
 		body, _ := json.Marshal(payload)
