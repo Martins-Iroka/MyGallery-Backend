@@ -47,7 +47,7 @@ type VideoCommentResponsePayload struct {
 //	@Failure		400		{object}	error
 //	@Failure		500		{object}	error
 //	@Security		ApiKeyAuth
-//	@Router			/videos/{postID}/createcomment [post]
+//	@Router			/videos/{postID}/create-comment [post]
 func (app *application) createVideoCommentHandler(w http.ResponseWriter, r *http.Request) {
 	postID := getVideoIdFromContext(r)
 

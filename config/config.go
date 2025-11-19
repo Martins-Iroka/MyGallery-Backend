@@ -51,7 +51,7 @@ func initConfig() Configuration {
 		},
 		AuthConfig: authConfig{
 			Secret: env.GetString("AUTH_TOKEN_SECRET", "test"),
-			Exp:    time.Hour * 24 * 3,
+			Exp:    time.Minute * 15,
 			Iss:    "MiGalaria",
 		},
 	}

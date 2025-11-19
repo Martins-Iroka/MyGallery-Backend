@@ -62,7 +62,7 @@ func (app *application) Mount() http.Handler {
 
 			r.Route("/{postID}", func(r chi.Router) {
 				r.Use(app.photoPostExistMiddleware)
-				r.Post("/createcomment", app.createCommentForPostHandler)
+				r.Post("/create-comment", app.createCommentForPostHandler)
 				r.Get("/comments", app.getCommentsByPostID)
 			})
 		})
@@ -73,7 +73,7 @@ func (app *application) Mount() http.Handler {
 
 			r.Route("/{postID}", func(r chi.Router) {
 				r.Use(app.videoPostExistMiddleware)
-				r.Post("/createcomment", app.createVideoCommentHandler)
+				r.Post("/create-comment", app.createVideoCommentHandler)
 				r.Get("/comments", app.getVideoCommentByPostID)
 			})
 		})

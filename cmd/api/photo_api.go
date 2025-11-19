@@ -48,7 +48,7 @@ type PhotoCommentResponsePayload struct {
 //	@Failure		400		{object}	error
 //	@Failure		500		{object}	error
 //	@Security		ApiKeyAuth
-//	@Router			/photos/{postID}/createcomment [post]
+//	@Router			/photos/{postID}/create-comment [post]
 func (app *application) createCommentForPostHandler(w http.ResponseWriter, r *http.Request) {
 	postID := getPostIDFromContext(r)
 
