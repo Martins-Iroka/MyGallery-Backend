@@ -353,7 +353,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/photos/{postID}/createcomment": {
+        "/photos/{postID}/create-comment": {
             "post": {
                 "security": [
                     {
@@ -508,7 +508,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/videos/{postID}/createcomment": {
+        "/videos/{postID}/create-comment": {
             "post": {
                 "security": [
                     {
@@ -675,6 +675,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "photographer": {
+                    "type": "string"
+                },
+                "portrait": {
                     "type": "string"
                 },
                 "small": {

@@ -75,6 +75,8 @@ definitions:
         type: string
       photographer:
         type: string
+      portrait:
+        type: string
       small:
         type: string
       tiny:
@@ -397,7 +399,7 @@ paths:
       summary: Get all comments using a postID
       tags:
       - photos
-  /photos/{postID}/createcomment:
+  /photos/{postID}/create-comment:
     post:
       consumes:
       - application/json
@@ -497,7 +499,7 @@ paths:
       summary: Get all comments using a postID
       tags:
       - videos
-  /videos/{postID}/createcomment:
+  /videos/{postID}/create-comment:
     post:
       consumes:
       - application/json
