@@ -59,7 +59,7 @@ definitions:
       username:
         type: string
     type: object
-  main.PhotoPostResponsePayload:
+  main.PhotoPostItem:
     properties:
       id:
         type: integer
@@ -81,6 +81,15 @@ definitions:
         type: string
       tiny:
         type: string
+    type: object
+  main.PhotoPostResponsePayload:
+    properties:
+      next_page:
+        type: integer
+      photo_items:
+        items:
+          $ref: '#/definitions/main.PhotoPostItem'
+        type: array
     type: object
   main.RefreshTokenRequestPayload:
     properties:
@@ -354,9 +363,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/main.PhotoPostResponsePayload'
-            type: array
+            $ref: '#/definitions/main.PhotoPostResponsePayload'
         "400":
           description: Bad Request
           schema: {}

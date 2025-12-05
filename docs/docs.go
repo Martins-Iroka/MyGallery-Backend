@@ -288,10 +288,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/main.PhotoPostResponsePayload"
-                            }
+                            "$ref": "#/definitions/main.PhotoPostResponsePayload"
                         }
                     },
                     "400": {
@@ -653,7 +650,7 @@ const docTemplate = `{
                 }
             }
         },
-        "main.PhotoPostResponsePayload": {
+        "main.PhotoPostItem": {
             "type": "object",
             "properties": {
                 "id": {
@@ -685,6 +682,20 @@ const docTemplate = `{
                 },
                 "tiny": {
                     "type": "string"
+                }
+            }
+        },
+        "main.PhotoPostResponsePayload": {
+            "type": "object",
+            "properties": {
+                "next_page": {
+                    "type": "integer"
+                },
+                "photo_items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/main.PhotoPostItem"
+                    }
                 }
             }
         },

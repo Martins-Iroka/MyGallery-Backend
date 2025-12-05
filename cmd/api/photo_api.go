@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/photo"
@@ -8,6 +9,11 @@ import (
 )
 
 type PhotoPostResponsePayload struct {
+	PhotoItems []PhotoPostItem `json:"photo_items"`
+	NextPage   int             `json:"next_page"`
+}
+
+type PhotoPostItem struct {
 	ID           int64  `json:"id"`
 	Photographer string `json:"photographer"`
 	Original     string `json:"original"`
@@ -90,7 +96,7 @@ func (app *application) createCommentForPostHandler(w http.ResponseWriter, r *ht
 //	@Produce		json
 //	@Param			limit	query		int	false	"Limit"
 //	@Param			offset	query		int	false	"Offset"
-//	@Success		200		{object}	[]PhotoPostResponsePayload
+//	@Success		200		{object}	PhotoPostResponsePayload
 //	@Failure		400		{object}	error
 //	@Failure		500		{object}	error
 //	@Security		ApiKeyAuth
@@ -126,10 +132,16 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	photos := []PhotoPostResponsePayload{}
+	nextOffset := p.Offset + p.Limit
+	log.Print(nextOffset)
+	if len(photoList) < p.Limit {
+		nextOffset = -1
+	}
+
+	photos := []PhotoPostItem{}
 
 	for _, p := range photoList {
-		photoPost := &PhotoPostResponsePayload{
+		photoPost := &PhotoPostItem{
 			ID:           p.ID,
 			Photographer: p.Photographer,
 			Original:     p.Original,
@@ -145,7 +157,12 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 		photos = append(photos, *photoPost)
 	}
 
-	if err := util.JsonResponse(w, http.StatusOK, photos); err != nil {
+	photoData := PhotoPostResponsePayload{
+		PhotoItems: photos,
+		NextPage:   nextOffset,
+	}
+
+	if err := util.JsonResponse(w, http.StatusOK, photoData); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
 }
