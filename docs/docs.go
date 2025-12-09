@@ -645,6 +645,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "username": {
                     "type": "string"
                 }

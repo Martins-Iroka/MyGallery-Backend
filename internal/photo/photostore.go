@@ -21,12 +21,12 @@ type PhotoPost struct {
 }
 
 type PhotoComment struct {
-	ID       int64
-	PostID   int64
-	UserID   int64
-	Content  string
-	CreateAt string
-	Username string
+	ID        int64
+	PostID    int64
+	UserID    int64
+	Content   string
+	CreatedAt string
+	Username  string
 }
 
 type PhotoStore struct {
@@ -124,7 +124,7 @@ func (p *PhotoStore) PostExists(ctx context.Context, postID int64) (bool, error)
 
 func (p *PhotoStore) GetCommentsByPostID(ctx context.Context, postID int64) ([]PhotoComment, error) {
 	query := `
-		SELECT pc.content, pc.created_at, u.username FROM photos_comment pc JOIN users u ON u.id = pc.user_id
+		SELECT pc.id, pc.content, pc.created_at, u.username FROM photos_comment pc JOIN users u ON u.id = pc.user_id
 		WHERE pc.post_id = $1 ORDER BY pc.created_at DESC
 	`
 
@@ -141,8 +141,9 @@ func (p *PhotoStore) GetCommentsByPostID(ctx context.Context, postID int64) ([]P
 	for rows.Next() {
 		var pc PhotoComment
 		err := rows.Scan(
+			&pc.ID,
 			&pc.Content,
-			&pc.CreateAt,
+			&pc.CreatedAt,
 			&pc.Username,
 		)
 		if err != nil {

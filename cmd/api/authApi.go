@@ -44,6 +44,7 @@ type LoginResponsePayload struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 	ExpiresIn    int64  `json:"expires_in"`
+	UserID       int64  `json:"user_id"`
 }
 
 type RefreshTokenRequestPayload struct {
@@ -260,6 +261,7 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresIn:    int64(app.config.AuthConfig.Exp.Seconds()),
+		UserID:       user.ID,
 	}
 
 	if err := util.JsonResponse(w, http.StatusOK, response); err != nil {

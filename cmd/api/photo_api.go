@@ -39,6 +39,7 @@ type PhotoCommentResponsePayload struct {
 	Content   string `json:"content"`
 	CreatedAt string `json:"created_at"`
 	Username  string `json:"username"`
+	CommentID int64  `json:"id"`
 }
 
 // CreateCommentForPhotoPost godoc
@@ -195,8 +196,9 @@ func (app *application) getCommentsByPostID(w http.ResponseWriter, r *http.Reque
 	for _, pc := range comments {
 		photoComment := &PhotoCommentResponsePayload{
 			Content:   pc.Content,
-			CreatedAt: pc.CreateAt,
+			CreatedAt: pc.CreatedAt,
 			Username:  pc.Username,
+			CommentID: pc.ID,
 		}
 
 		photoComments = append(photoComments, *photoComment)
