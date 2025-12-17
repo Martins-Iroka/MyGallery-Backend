@@ -785,17 +785,15 @@ const docTemplate = `{
         },
         "main.VideoCommentResponsePayload": {
             "type": "object",
-            "required": [
-                "content",
-                "created_at",
-                "username"
-            ],
             "properties": {
                 "content": {
                     "type": "string"
                 },
                 "created_at": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "username": {
                     "type": "string"

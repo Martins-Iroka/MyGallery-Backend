@@ -163,7 +163,7 @@ func (v *VideoStore) PostExists(ctx context.Context, videoID int64) error {
 
 func (v *VideoStore) GetCommentsByPostID(ctx context.Context, videoID int64) ([]VideoComment, error) {
 	query := `
-		SELECT vc.content, vc.created_at, u.username FROM video_comments vc JOIN users u ON u.id = vc.user_id
+		SELECT vc.content, vc.created_at, vc.id, u.username FROM video_comments vc JOIN users u ON u.id = vc.user_id
 		WHERE vc.post_id = $1 ORDER BY vc.created_at DESC
 	`
 
@@ -182,6 +182,7 @@ func (v *VideoStore) GetCommentsByPostID(ctx context.Context, videoID int64) ([]
 		err := rows.Scan(
 			&vc.Content,
 			&vc.CreateAt,
+			&vc.ID,
 			&vc.Username,
 		)
 		if err != nil {

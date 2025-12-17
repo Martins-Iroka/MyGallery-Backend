@@ -7,6 +7,11 @@ import (
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/video"
 )
 
+type VideoPostInfoResponsePayload struct {
+	VideoItems []VideoPostResponsePayload `json:"video_items"`
+	NextPage   int                        `json:"next_page"`
+}
+
 type VideoPostResponsePayload struct {
 	ID          int64               `json:"id"`
 	Video_Url   string              `json:"video_url"`
@@ -29,9 +34,10 @@ type CreateVideoCommentResponsePayload struct {
 }
 
 type VideoCommentResponsePayload struct {
-	Content   string `json:"content" validate:"required"`
-	CreatedAt string `json:"created_at" validate:"required"`
-	Username  string `json:"username" validate:"required"`
+	Content   string `json:"content"`
+	CreatedAt string `json:"created_at"`
+	Username  string `json:"username"`
+	ID        int64  `json:"id"`
 }
 
 // CreateCommentForVideoPost godoc
@@ -110,6 +116,7 @@ func (app *application) getVideoCommentByPostID(w http.ResponseWriter, r *http.R
 			Content:   vc.Content,
 			CreatedAt: vc.CreateAt,
 			Username:  vc.Username,
+			ID:        vc.ID,
 		}
 		videoComments = append(videoComments, *videoComment)
 	}
@@ -164,6 +171,11 @@ func (app *application) getVideosHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	nextOffset := p.Offset + p.Limit
+	if len(videoList) < p.Limit {
+		nextOffset = -1
+	}
+
 	videos := []VideoPostResponsePayload{}
 	for _, v := range videoList {
 		video := &VideoPostResponsePayload{
@@ -184,7 +196,12 @@ func (app *application) getVideosHandler(w http.ResponseWriter, r *http.Request)
 		videos = append(videos, *video)
 	}
 
-	if err := util.JsonResponse(w, http.StatusOK, videos); err != nil {
+	videoData := VideoPostInfoResponsePayload{
+		VideoItems: videos,
+		NextPage:   nextOffset,
+	}
+
+	if err := util.JsonResponse(w, http.StatusOK, videoData); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
 }

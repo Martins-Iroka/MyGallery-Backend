@@ -154,12 +154,10 @@ definitions:
         type: string
       created_at:
         type: string
+      id:
+        type: integer
       username:
         type: string
-    required:
-    - content
-    - created_at
-    - username
     type: object
   main.VideoDownloadFile:
     properties:
