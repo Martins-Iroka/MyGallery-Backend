@@ -826,6 +826,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/main.VideoDownloadFile"
                     }
                 },
+                "video_image": {
+                    "type": "string"
+                },
                 "video_url": {
                     "type": "string"
                 }

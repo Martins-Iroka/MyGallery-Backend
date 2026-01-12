@@ -14,6 +14,7 @@ type VideoPostInfoResponsePayload struct {
 
 type VideoPostResponsePayload struct {
 	ID          int64               `json:"id"`
+	Video_Image string              `json:"video_image"`
 	Video_Url   string              `json:"video_url"`
 	Duration    int                 `json:"duration"`
 	Video_Files []VideoDownloadFile `json:"video_files"`
@@ -179,9 +180,10 @@ func (app *application) getVideosHandler(w http.ResponseWriter, r *http.Request)
 	videos := []VideoPostResponsePayload{}
 	for _, v := range videoList {
 		video := &VideoPostResponsePayload{
-			ID:        v.ID,
-			Video_Url: v.Video_Url,
-			Duration:  v.Duration,
+			ID:          v.ID,
+			Video_Image: v.Video_Image,
+			Video_Url:   v.Video_Url,
+			Duration:    v.Duration,
 		}
 		videoDownloadFile := []VideoDownloadFile{}
 		for _, vdf := range v.Files {

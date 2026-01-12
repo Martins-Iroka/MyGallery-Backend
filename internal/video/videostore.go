@@ -93,6 +93,7 @@ func (v *VideoStore) GetVideoPostAndDownloadFile(ctx context.Context, paginate u
 		SELECT 
 			vp.id,
 			vp.video_url,
+			vp.video_image,
 			vp.duration,
 			COALESCE(
 				json_agg(
@@ -126,7 +127,7 @@ func (v *VideoStore) GetVideoPostAndDownloadFile(ctx context.Context, paginate u
 		var vp VideoPostAndDownloadFile
 		var filesJSON []byte
 
-		if err := rows.Scan(&vp.ID, &vp.Video_Url, &vp.Duration, &filesJSON); err != nil {
+		if err := rows.Scan(&vp.ID, &vp.Video_Url, &vp.Video_Image, &vp.Duration, &filesJSON); err != nil {
 			return nil, err
 		}
 

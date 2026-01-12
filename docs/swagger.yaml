@@ -176,6 +176,8 @@ definitions:
         items:
           $ref: '#/definitions/main.VideoDownloadFile'
         type: array
+      video_image:
+        type: string
       video_url:
         type: string
     type: object
