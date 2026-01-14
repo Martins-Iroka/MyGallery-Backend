@@ -13,6 +13,7 @@ type Configuration struct {
 	DB           dbConfig
 	TwilioConfig twilioConfig
 	AuthConfig   authConfig
+	StytchConfig stytchConfig
 }
 
 type dbConfig struct {
@@ -23,6 +24,10 @@ type dbConfig struct {
 
 type twilioConfig struct {
 	AccountSID, AuthToken, ServiceID string
+}
+
+type stytchConfig struct {
+	ProjectID, Secret string
 }
 
 type authConfig struct {
@@ -53,6 +58,10 @@ func initConfig() Configuration {
 			Secret: env.GetString("AUTH_TOKEN_SECRET", "test"),
 			Exp:    time.Minute * 15,
 			Iss:    "MiGalaria",
+		},
+		StytchConfig: stytchConfig{
+			ProjectID: env.GetString("STYTCH_PROJECT_ID", ""),
+			Secret:    env.GetString("STYTCH_SECRET", ""),
 		},
 	}
 }

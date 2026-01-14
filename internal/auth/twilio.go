@@ -9,8 +9,6 @@ import (
 	verify "github.com/twilio/twilio-go/rest/verify/v2"
 )
 
-const maxRetries = 3
-
 type TwilioVerification struct {
 	client    *twilio.RestClient
 	serviceID string
@@ -25,10 +23,10 @@ func NewTwilioVerification(accountSID, authToken, serviceID string) *TwilioVerif
 	return &TwilioVerification{client: client, serviceID: serviceID}
 }
 
-func (twilio *TwilioVerification) SendVerificationCode(email string) error {
+func (twilio *TwilioVerification) SendVerificationCode(userEmail string) error {
 	channelEmail := "email"
 	params := &verify.CreateVerificationParams{
-		To:      &email,
+		To:      &userEmail,
 		Channel: &channelEmail,
 	}
 	for i := range maxRetries {
@@ -65,5 +63,5 @@ func (twilio *TwilioVerification) VerifyCode(email, code string) error {
 		}
 	}
 
-	return fmt.Errorf("failed to code after %d attempts", maxRetries)
+	return fmt.Errorf("failed to verify code after %d attempts", maxRetries)
 }

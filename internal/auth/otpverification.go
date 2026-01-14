@@ -1,5 +1,7 @@
 package auth
 
+const maxRetries = 3
+
 type OTPVerification interface {
 	SendVerificationCode(email string) error
 	VerifyCode(email, code string) error
@@ -7,7 +9,7 @@ type OTPVerification interface {
 
 type MockOTPVerification struct{}
 
-func (m MockOTPVerification) SendVerificationCode(email string) error {
+func (m MockOTPVerification) SendVerificationCode(userEmail string) error {
 	return nil
 }
 

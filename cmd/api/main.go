@@ -48,11 +48,20 @@ func main() {
 	defer db.Close()
 	logger.Info("data connection pool established")
 
-	twilio := auth.NewTwilioVerification(
-		config.Config.TwilioConfig.AccountSID,
-		config.Config.TwilioConfig.AuthToken,
-		config.Config.TwilioConfig.ServiceID,
+	// twilio := auth.NewTwilioVerification(
+	// 	config.Config.TwilioConfig.AccountSID,
+	// 	config.Config.TwilioConfig.AuthToken,
+	// 	config.Config.TwilioConfig.ServiceID,
+	// )
+
+	stytch, err := auth.NewStytchVerification(
+		config.Config.StytchConfig.ProjectID,
+		config.Config.StytchConfig.Secret,
 	)
+
+	if err != nil {
+		logger.Error(err)
+	}
 
 	store := internal.NewStorage(db)
 
@@ -65,7 +74,7 @@ func main() {
 	app := &application{
 		config:          config.Config,
 		logger:          logger,
-		otpVerification: twilio,
+		otpVerification: stytch,
 		store:           store,
 		auth:            jwtAuthenticator,
 	}
