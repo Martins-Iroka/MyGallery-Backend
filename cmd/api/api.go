@@ -54,6 +54,7 @@ func (app *application) Mount() http.Handler {
 			r.Post("/login", app.loginUserHandler)
 			r.Post("/refresh", app.refreshTokenHandler)
 			r.Post("/logout", app.logoutHandler)
+			r.Post("/resendOTP", app.resendOTPHandler)
 		})
 
 		r.Route("/photos", func(r chi.Router) {

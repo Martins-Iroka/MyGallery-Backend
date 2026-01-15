@@ -131,6 +131,19 @@ definitions:
       token:
         type: string
     type: object
+  main.ResendOTPRequestPayload:
+    properties:
+      email:
+        maxLength: 255
+        type: string
+    required:
+    - email
+    type: object
+  main.ResendOTPResponsePayload:
+    properties:
+      email_id:
+        type: string
+    type: object
   main.VerifyUserRequestPayload:
     properties:
       code:
@@ -303,6 +316,33 @@ paths:
           description: Internal Server Error
           schema: {}
       summary: Registers a user
+      tags:
+      - authentication
+  /authentication/resendOTP:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Resend OTP
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.ResendOTPRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OTP sent
+          schema:
+            $ref: '#/definitions/main.ResendOTPResponsePayload'
+        "400":
+          description: Bad Request
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Resend OTP
       tags:
       - authentication
   /authentication/verify:

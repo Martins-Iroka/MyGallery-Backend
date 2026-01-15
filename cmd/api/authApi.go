@@ -60,6 +60,14 @@ type LogoutRequestPayload struct {
 	RefreshToken string `json:"refresh_token" validate:"required"`
 }
 
+type ResendOTPRequestPayload struct {
+	Email string `json:"email" validate:"required,email,max=255"`
+}
+
+type ResendOTPResponsePayload struct {
+	EmailID string `json:"email_id"`
+}
+
 // RegisterUserHandler godoc
 //
 //	@summary		Registers a user
@@ -133,6 +141,45 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 			util.InternalServerErrorResponse(w, r, err, app.logger)
 		}
 	}
+}
+
+// ResendOTPHandler godoc
+//
+//	@summary	Resend OTP
+//	@Tags		authentication
+//	@Accept		json
+//	@Produce	json
+//	@Param		payload	body		ResendOTPRequestPayload		true	"Resend OTP"
+//	@Success	200		{object}	ResendOTPResponsePayload	"OTP sent"
+//	@Failure	400		{object}	error
+//	@Failure	500		{object}	error
+//	@Router		/authentication/resendOTP [post]
+func (app *application) resendOTPHandler(w http.ResponseWriter, r *http.Request) {
+
+	var payload ResendOTPRequestPayload
+
+	if err := util.ReadJson(w, r, &payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if err := util.Validate.Struct(payload); err != nil {
+		util.BadRequestErrorResponse(w, r, err, app.logger)
+		return
+	}
+
+	if emailId, err := app.otpVerification.SendVerificationCode(payload.Email); err != nil {
+		app.logger.Errorw("error resending verification email", "error", err)
+		util.InternalServerErrorResponse(w, r, err, app.logger)
+	} else {
+		response := ResendOTPResponsePayload{
+			EmailID: emailId,
+		}
+		if err := util.JsonResponse(w, http.StatusOK, response); err != nil {
+			util.InternalServerErrorResponse(w, r, err, app.logger)
+		}
+	}
+
 }
 
 // VerifyUserHandler godoc

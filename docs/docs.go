@@ -190,6 +190,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/authentication/resendOTP": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Resend OTP",
+                "parameters": [
+                    {
+                        "description": "Resend OTP",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.ResendOTPRequestPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OTP sent",
+                        "schema": {
+                            "$ref": "#/definitions/main.ResendOTPResponsePayload"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/authentication/verify": {
             "post": {
                 "description": "verify user",
@@ -754,6 +795,26 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.ResendOTPRequestPayload": {
+            "type": "object",
+            "required": [
+                "email"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "maxLength": 255
+                }
+            }
+        },
+        "main.ResendOTPResponsePayload": {
+            "type": "object",
+            "properties": {
+                "email_id": {
                     "type": "string"
                 }
             }
