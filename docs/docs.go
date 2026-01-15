@@ -176,7 +176,7 @@ const docTemplate = `{
                     "201": {
                         "description": "User registered",
                         "schema": {
-                            "$ref": "#/definitions/main.TokenResponsePayload"
+                            "$ref": "#/definitions/main.RegisterUserResponsePayload"
                         }
                     },
                     "400": {
@@ -747,9 +747,12 @@ const docTemplate = `{
                 }
             }
         },
-        "main.TokenResponsePayload": {
+        "main.RegisterUserResponsePayload": {
             "type": "object",
             "properties": {
+                "email_id": {
+                    "type": "string"
+                },
                 "token": {
                     "type": "string"
                 }
@@ -759,16 +762,15 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "code",
-                "email",
+                "email_id",
                 "token"
             ],
             "properties": {
                 "code": {
                     "type": "string"
                 },
-                "email": {
-                    "type": "string",
-                    "maxLength": 255
+                "email_id": {
+                    "type": "string"
                 },
                 "token": {
                     "type": "string"

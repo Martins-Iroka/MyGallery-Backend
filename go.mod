@@ -4,6 +4,7 @@ go 1.25.3
 
 require (
 	github.com/go-chi/chi/v5 v5.2.3
+	github.com/stytchauth/stytch-go/v16 v16.41.0
 	github.com/swaggo/swag v1.16.6
 	go.uber.org/zap v1.27.0
 )
@@ -22,7 +23,6 @@ require (
 	github.com/go-openapi/swag/typeutils v0.25.1 // indirect
 	github.com/go-openapi/swag/yamlutils v0.25.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/stytchauth/stytch-go/v16 v16.41.0 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.29.0 // indirect

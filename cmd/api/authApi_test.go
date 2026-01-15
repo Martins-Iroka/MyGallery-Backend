@@ -144,9 +144,9 @@ func TestVerifyUserHandler(t *testing.T) {
 
 	t.Run("should return 400 because code length is greater than 6", func(t *testing.T) {
 		payload := VerifyUserRequestPayload{
-			Code:  "12345678",
-			Email: email,
-			Token: "token",
+			Code:    "12345678",
+			EmailId: email,
+			Token:   "token",
 		}
 		body, _ := json.Marshal(payload)
 		req, err := http.NewRequest(http.MethodPost, verifyPath, bytes.NewReader(body))
@@ -161,9 +161,9 @@ func TestVerifyUserHandler(t *testing.T) {
 
 	t.Run("should return 400 because of wrong email format", func(t *testing.T) {
 		payload := VerifyUserRequestPayload{
-			Code:  "123456",
-			Email: "test",
-			Token: "token",
+			Code:    "123456",
+			EmailId: "test",
+			Token:   "token",
 		}
 		body, _ := json.Marshal(payload)
 		req, err := http.NewRequest(http.MethodPost, verifyPath, bytes.NewReader(body))
@@ -178,8 +178,8 @@ func TestVerifyUserHandler(t *testing.T) {
 
 	t.Run("should return 400 if token wasn't sent", func(t *testing.T) {
 		payload := VerifyUserRequestPayload{
-			Code:  "123456",
-			Email: "test@example.com",
+			Code:    "123456",
+			EmailId: "test@example.com",
 		}
 
 		body, _ := json.Marshal(payload)
@@ -196,9 +196,9 @@ func TestVerifyUserHandler(t *testing.T) {
 
 	t.Run("should return 200", func(t *testing.T) {
 		payload := VerifyUserRequestPayload{
-			Code:  "123456",
-			Email: "t@example.com",
-			Token: "token",
+			Code:    "123456",
+			EmailId: "t@example.com",
+			Token:   "token",
 		}
 
 		body, _ := json.Marshal(payload)

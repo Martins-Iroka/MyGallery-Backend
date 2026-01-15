@@ -124,8 +124,10 @@ definitions:
     - password
     - username
     type: object
-  main.TokenResponsePayload:
+  main.RegisterUserResponsePayload:
     properties:
+      email_id:
+        type: string
       token:
         type: string
     type: object
@@ -133,14 +135,13 @@ definitions:
     properties:
       code:
         type: string
-      email:
-        maxLength: 255
+      email_id:
         type: string
       token:
         type: string
     required:
     - code
-    - email
+    - email_id
     - token
     type: object
   main.VerifyUserResponsePayload:
@@ -294,7 +295,7 @@ paths:
         "201":
           description: User registered
           schema:
-            $ref: '#/definitions/main.TokenResponsePayload'
+            $ref: '#/definitions/main.RegisterUserResponsePayload'
         "400":
           description: Bad Request
           schema: {}

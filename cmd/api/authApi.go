@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -21,14 +20,15 @@ type RegisterUserRequestPayload struct {
 	Password string `json:"password" validate:"required,min=5,max=72"`
 }
 
-type TokenResponsePayload struct {
-	Token string `json:"token"`
+type RegisterUserResponsePayload struct {
+	EmailID string `json:"email_id"`
+	Token   string `json:"token"`
 }
 
 type VerifyUserRequestPayload struct {
-	Code  string `json:"code" validate:"required,len=6"`
-	Email string `json:"email" validate:"required,email,max=255"`
-	Token string `json:"token" validate:"required"`
+	Code    string `json:"code" validate:"required,len=6"`
+	EmailId string `json:"email_id" validate:"required"`
+	Token   string `json:"token" validate:"required"`
 }
 
 type VerifyUserResponsePayload struct {
@@ -68,7 +68,7 @@ type LogoutRequestPayload struct {
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		RegisterUserRequestPayload	true	"User credentials"
-//	@Success		201		{object}	TokenResponsePayload		"User registered"
+//	@Success		201		{object}	RegisterUserResponsePayload	"User registered"
 //	@Failure		400		{object}	error
 //	@Failure		500		{object}	error
 //	@Router			/authentication/register [post]
@@ -114,28 +114,24 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	tokenResponse := TokenResponsePayload{
-		Token: token,
-	}
+	if emailId, err := app.otpVerification.SendVerificationCode(user.Email); err != nil {
+		app.logger.Errorw("error sending verification email", "error", err, "user_id", user.ID)
 
-	go func(userID int64, email string) {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-		if err := app.otpVerification.SendVerificationCode(email); err != nil {
-			app.logger.Errorw("error sending verification email", "error", err, "user_id", userID)
-
-			if deleteErr := app.store.User.DeleteUser(ctx, userID); deleteErr != nil {
-				app.logger.Errorw("error deleting user after email failure",
-					"error", deleteErr, "user_id", userID)
-			} else {
-				app.logger.Infow("user deleted after email failure",
-					"user_id", userID)
-			}
+		if deleteErr := app.store.User.DeleteUser(ctx, user.ID); deleteErr != nil {
+			app.logger.Errorw("error deleting user after email failure",
+				"error", deleteErr, "user_id", user.ID)
+		} else {
+			app.logger.Infow("user deleted after email failure",
+				"user_id", user.ID)
 		}
-	}(user.ID, user.Email)
-
-	if err := util.JsonResponse(w, http.StatusCreated, tokenResponse); err != nil {
-		util.InternalServerErrorResponse(w, r, err, app.logger)
+	} else {
+		tokenResponse := RegisterUserResponsePayload{
+			EmailID: emailId,
+			Token:   token,
+		}
+		if err := util.JsonResponse(w, http.StatusCreated, tokenResponse); err != nil {
+			util.InternalServerErrorResponse(w, r, err, app.logger)
+		}
 	}
 }
 
@@ -164,7 +160,7 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if err := app.otpVerification.VerifyCode(payload.Email, payload.Code); err != nil {
+	if err := app.otpVerification.VerifyCode(payload.EmailId, payload.Code); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 		return
 	}

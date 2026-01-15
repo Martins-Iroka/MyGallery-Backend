@@ -12,8 +12,7 @@ import (
 )
 
 type StytchVerification struct {
-	client  *stytchapi.API
-	emailId string
+	client *stytchapi.API
 }
 
 func NewStytchVerification(projectID, secret string) (*StytchVerification, error) {
@@ -24,7 +23,7 @@ func NewStytchVerification(projectID, secret string) (*StytchVerification, error
 	return &StytchVerification{client: client}, nil
 }
 
-func (sv *StytchVerification) SendVerificationCode(userEmail string) error {
+func (sv *StytchVerification) SendVerificationCode(userEmail string) (string, error) {
 	params := &email.LoginOrCreateParams{
 		Email:             userEmail,
 		ExpirationMinutes: 10,
@@ -39,14 +38,13 @@ func (sv *StytchVerification) SendVerificationCode(userEmail string) error {
 			time.Sleep(time.Second * time.Duration(i+1))
 			continue
 		} else if resp.StatusCode != 200 {
-			return fmt.Errorf("error sending OTP. status code is %d", resp.StatusCode)
+			return "", fmt.Errorf("error sending OTP. status code is %d", resp.StatusCode)
 		} else {
-			sv.emailId = resp.EmailID
-			return nil
+			return resp.EmailID, nil
 		}
 	}
 
-	return fmt.Errorf("failed to send email after %d attempts", maxRetries)
+	return "", fmt.Errorf("failed to send email after %d attempts", maxRetries)
 }
 
 func (sv *StytchVerification) VerifyCode(email, code string) error {
