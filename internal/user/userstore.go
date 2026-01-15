@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
+	"log"
 	"time"
 
 	"github.com/Martins-Iroka/MyGallery-Backend/internal/util"
@@ -44,6 +45,18 @@ func (s *UserStore) ActivateUser(ctx context.Context, token string) error {
 
 func (s *UserStore) CreateUserAndVerificationToken(ctx context.Context, user *User, token string) error {
 	return util.WithTransaction(s.Db, ctx, func(tx *sql.Tx) error {
+		userID, err := s.getUnverifiedUser(ctx, tx, user.Email)
+		if err == nil {
+			if err := s.deleteUser(ctx, tx, userID); err != nil {
+				log.Printf("Error is %s", err.Error())
+			}
+			if err := s.deleteUserVerificationToken(ctx, tx, userID); err != nil {
+				log.Printf("Error is %s", err.Error())
+			}
+		} else {
+			log.Printf("getUnverifiedUser error is %s", err.Error())
+		}
+
 		if err := s.createUser(ctx, tx, user); err != nil {
 			return err
 		}
@@ -91,6 +104,23 @@ func (s *UserStore) GetUserByEmail(ctx context.Context, email string) (*User, er
 		}
 	}
 	return &user, nil
+}
+
+func (s *UserStore) getUnverifiedUser(ctx context.Context, tx *sql.Tx, email string) (int64, error) {
+	query := `
+		SELECT id FROM users WHERE email = $1 AND is_verified = false
+	`
+
+	ctx, cancel := context.WithTimeout(ctx, util.QueryTimeoutDuration)
+	defer cancel()
+
+	var userID int64
+
+	err := tx.QueryRowContext(ctx, query, email).Scan(
+		&userID,
+	)
+
+	return userID, err
 }
 
 func (s *UserStore) GetUserByID(ctx context.Context, userID int64) (*User, error) {
