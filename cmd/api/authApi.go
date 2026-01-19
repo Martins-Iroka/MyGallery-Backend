@@ -77,8 +77,8 @@ type ResendOTPResponsePayload struct {
 //	@Produce		json
 //	@Param			payload	body		RegisterUserRequestPayload	true	"User credentials"
 //	@Success		201		{object}	RegisterUserResponsePayload	"User registered"
-//	@Failure		400		{object}	error
-//	@Failure		500		{object}	error
+//	@Failure		400		{object}	util.ErrorResponse
+//	@Failure		500		{object}	util.ErrorResponse
 //	@Router			/authentication/register [post]
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload RegisterUserRequestPayload
@@ -151,8 +151,8 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 //	@Produce	json
 //	@Param		payload	body		ResendOTPRequestPayload		true	"Resend OTP"
 //	@Success	200		{object}	ResendOTPResponsePayload	"OTP sent"
-//	@Failure	400		{object}	error
-//	@Failure	500		{object}	error
+//	@Failure	400		{object}	util.ErrorResponse
+//	@Failure	500		{object}	util.ErrorResponse
 //	@Router		/authentication/resendOTP [post]
 func (app *application) resendOTPHandler(w http.ResponseWriter, r *http.Request) {
 
@@ -191,8 +191,8 @@ func (app *application) resendOTPHandler(w http.ResponseWriter, r *http.Request)
 // @Produce		json
 // @Param			payload	body		VerifyUserRequestPayload	true	"User verification credentials"
 // @Success		200		{object}	VerifyUserResponsePayload	"User verified"
-// @Failure		400		{object}	error
-// @Failure		500		{object}	error
+// @Failure		400		{object}	util.ErrorResponse
+// @Failure		500		{object}	util.ErrorResponse
 // @Router			/authentication/verify [post]
 func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload VerifyUserRequestPayload
@@ -236,9 +236,9 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 //	@Accept		json
 //	@Produce	json
 //	@Param		payload	body		LoginUserRequestPayload	true	"User login credentials"
-//	@Success	200		{string}	Token					"User token"
-//	@Failure	400		{object}	error
-//	@Failure	500		{object}	error
+//	@Success	200		{object}	LoginResponsePayload	"Login response"
+//	@Failure	400		{object}	util.ErrorResponse
+//	@Failure	500		{object}	util.ErrorResponse
 //	@Router		/authentication/login [post]
 func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request) {
 	var payload LoginUserRequestPayload
@@ -320,9 +320,9 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 //	@Produce	json
 //	@Param		payload	body		RefreshTokenRequestPayload	true	"Refresh token"
 //	@Success	200		{object}	RefreshTokenResponsePayload	"New access token"
-//	@Failure	400		{object}	error
-//	@Failure	401		{object}	error
-//	@Failure	500		{object}	error
+//	@Failure	400		{object}	util.ErrorResponse
+//	@Failure	401		{object}	util.ErrorResponse
+//	@Failure	500		{object}	util.ErrorResponse
 //	@Router		/authentication/refresh [post]
 func (app *application) refreshTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var payload RefreshTokenRequestPayload
@@ -384,8 +384,8 @@ func (app *application) refreshTokenHandler(w http.ResponseWriter, r *http.Reque
 //	@Produce	json
 //	@Param		payload	body	LogoutRequestPayload	true	"Refresh token to revoke"
 //	@Success	204		"No content"
-//	@Failure	400		{object}	error
-//	@Failure	500		{object}	error
+//	@Failure	400		{object}	util.ErrorResponse
+//	@Failure	500		{object}	util.ErrorResponse
 //	@Router		/authentication/logout [post]
 func (app *application) logoutHandler(w http.ResponseWriter, r *http.Request) {
 	var payload LogoutRequestPayload

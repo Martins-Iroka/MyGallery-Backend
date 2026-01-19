@@ -48,13 +48,13 @@ func (s *UserStore) CreateUserAndVerificationToken(ctx context.Context, user *Us
 		userID, err := s.getUnverifiedUser(ctx, tx, user.Email)
 		if err == nil {
 			if err := s.deleteUser(ctx, tx, userID); err != nil {
-				log.Printf("Error is %s", err.Error())
+				log.Printf("failed to delete unverified user with ID %d: %v", userID, err)
 			}
 			if err := s.deleteUserVerificationToken(ctx, tx, userID); err != nil {
-				log.Printf("Error is %s", err.Error())
+				log.Printf("failed to delete verification token for unverified user with ID %d: %v", userID, err)
 			}
 		} else {
-			log.Printf("getUnverifiedUser error is %s", err.Error())
+			log.Printf("getUnverifiedUser error for email %s: %s", user.Email, err.Error())
 		}
 
 		if err := s.createUser(ctx, tx, user); err != nil {

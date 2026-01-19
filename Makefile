@@ -16,7 +16,7 @@ migrate-down:
 
 .PHONY: gen-docs
 gen-docs:
-	@swag init -d cmd/api && swag fmt
+	@swag init -d cmd/api,internal/util && swag fmt
 
 .PHONY: build
 build:
