@@ -206,6 +206,10 @@ definitions:
       video_url:
         type: string
     type: object
+  util.DataResponse:
+    properties:
+      data: {}
+    type: object
   util.ErrorResponse:
     properties:
       error:
@@ -241,7 +245,12 @@ paths:
         "200":
           description: Login response
           schema:
-            $ref: '#/definitions/main.LoginResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.LoginResponsePayload'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -297,7 +306,12 @@ paths:
         "200":
           description: New access token
           schema:
-            $ref: '#/definitions/main.RefreshTokenResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.RefreshTokenResponsePayload'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -331,7 +345,12 @@ paths:
         "201":
           description: User registered
           schema:
-            $ref: '#/definitions/main.RegisterUserResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.RegisterUserResponsePayload'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -360,7 +379,12 @@ paths:
         "200":
           description: OTP sent
           schema:
-            $ref: '#/definitions/main.ResendOTPResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.ResendOTPResponsePayload'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -390,7 +414,12 @@ paths:
         "200":
           description: User verified
           schema:
-            $ref: '#/definitions/main.VerifyUserResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.VerifyUserResponsePayload'
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -435,13 +464,20 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.PhotoPostResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.PhotoPostResponsePayload'
+              type: object
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
         "500":
           description: Internal Server Error
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Get all photo posts
@@ -464,15 +500,22 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/main.PhotoCommentResponsePayload'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/main.PhotoCommentResponsePayload'
+                  type: array
+              type: object
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
         "500":
           description: Internal Server Error
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Get all comments using a postID
@@ -501,13 +544,20 @@ paths:
         "201":
           description: Comment created
           schema:
-            $ref: '#/definitions/main.CreatePhotoCommentResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.CreatePhotoCommentResponsePayload'
+              type: object
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
         "500":
           description: Internal Server Error
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Create comment for a photo post
@@ -533,15 +583,22 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/main.VideoPostResponsePayload'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/main.VideoPostResponsePayload'
+                  type: array
+              type: object
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
         "500":
           description: Internal Server Error
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Get all video posts
@@ -564,15 +621,22 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/main.VideoCommentResponsePayload'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/main.VideoCommentResponsePayload'
+                  type: array
+              type: object
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
         "500":
           description: Internal Server Error
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Get all comments using a postID
@@ -601,13 +665,20 @@ paths:
         "201":
           description: Comment created
           schema:
-            $ref: '#/definitions/main.CreateVideoCommentResponsePayload'
+            allOf:
+            - $ref: '#/definitions/util.DataResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/main.CreateVideoCommentResponsePayload'
+              type: object
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
         "500":
           description: Internal Server Error
-          schema: {}
+          schema:
+            $ref: '#/definitions/util.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Create comment for a video post

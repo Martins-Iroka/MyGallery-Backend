@@ -51,7 +51,19 @@ const docTemplate = `{
                     "200": {
                         "description": "Login response",
                         "schema": {
-                            "$ref": "#/definitions/main.LoginResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.LoginResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -138,7 +150,19 @@ const docTemplate = `{
                     "200": {
                         "description": "New access token",
                         "schema": {
-                            "$ref": "#/definitions/main.RefreshTokenResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.RefreshTokenResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -190,7 +214,19 @@ const docTemplate = `{
                     "201": {
                         "description": "User registered",
                         "schema": {
-                            "$ref": "#/definitions/main.RegisterUserResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.RegisterUserResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -235,7 +271,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OTP sent",
                         "schema": {
-                            "$ref": "#/definitions/main.ResendOTPResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.ResendOTPResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -281,7 +329,19 @@ const docTemplate = `{
                     "200": {
                         "description": "User verified",
                         "schema": {
-                            "$ref": "#/definitions/main.VerifyUserResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.VerifyUserResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -355,16 +415,32 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.PhotoPostResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.PhotoPostResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -400,19 +476,35 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/main.PhotoCommentResponsePayload"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/main.PhotoCommentResponsePayload"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -457,16 +549,32 @@ const docTemplate = `{
                     "201": {
                         "description": "Comment created",
                         "schema": {
-                            "$ref": "#/definitions/main.CreatePhotoCommentResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.CreatePhotoCommentResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -507,19 +615,35 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/main.VideoPostResponsePayload"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/main.VideoPostResponsePayload"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -555,19 +679,35 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/main.VideoCommentResponsePayload"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/main.VideoCommentResponsePayload"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -612,16 +752,32 @@ const docTemplate = `{
                     "201": {
                         "description": "Comment created",
                         "schema": {
-                            "$ref": "#/definitions/main.CreateVideoCommentResponsePayload"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.DataResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/main.CreateVideoCommentResponsePayload"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {}
+                        "schema": {
+                            "$ref": "#/definitions/util.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -938,6 +1094,12 @@ const docTemplate = `{
                 "video_url": {
                     "type": "string"
                 }
+            }
+        },
+        "util.DataResponse": {
+            "type": "object",
+            "properties": {
+                "data": {}
             }
         },
         "util.ErrorResponse": {

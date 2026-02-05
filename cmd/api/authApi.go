@@ -75,8 +75,8 @@ type ResendOTPResponsePayload struct {
 //	@Tags			authentication
 //	@Accept			json
 //	@Produce		json
-//	@Param			payload	body		RegisterUserRequestPayload	true	"User credentials"
-//	@Success		201		{object}	RegisterUserResponsePayload	"User registered"
+//	@Param			payload	body		RegisterUserRequestPayload							true	"User credentials"
+//	@Success		201		{object}	util.DataResponse{data=RegisterUserResponsePayload}	"User registered"
 //	@Failure		400		{object}	util.ErrorResponse
 //	@Failure		500		{object}	util.ErrorResponse
 //	@Router			/authentication/register [post]
@@ -149,8 +149,8 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 //	@Tags		authentication
 //	@Accept		json
 //	@Produce	json
-//	@Param		payload	body		ResendOTPRequestPayload		true	"Resend OTP"
-//	@Success	200		{object}	ResendOTPResponsePayload	"OTP sent"
+//	@Param		payload	body		ResendOTPRequestPayload								true	"Resend OTP"
+//	@Success	200		{object}	util.DataResponse{data=ResendOTPResponsePayload}	"OTP sent"
 //	@Failure	400		{object}	util.ErrorResponse
 //	@Failure	500		{object}	util.ErrorResponse
 //	@Router		/authentication/resendOTP [post]
@@ -189,8 +189,8 @@ func (app *application) resendOTPHandler(w http.ResponseWriter, r *http.Request)
 // @Tags			authentication
 // @Accept			json
 // @Produce		json
-// @Param			payload	body		VerifyUserRequestPayload	true	"User verification credentials"
-// @Success		200		{object}	VerifyUserResponsePayload	"User verified"
+// @Param			payload	body		VerifyUserRequestPayload							true	"User verification credentials"
+// @Success		200		{object}	util.DataResponse{data=VerifyUserResponsePayload}	"User verified"
 // @Failure		400		{object}	util.ErrorResponse
 // @Failure		500		{object}	util.ErrorResponse
 // @Router			/authentication/verify [post]
@@ -235,8 +235,8 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 //	@Tags		authentication
 //	@Accept		json
 //	@Produce	json
-//	@Param		payload	body		LoginUserRequestPayload	true	"User login credentials"
-//	@Success	200		{object}	LoginResponsePayload	"Login response"
+//	@Param		payload	body		LoginUserRequestPayload							true	"User login credentials"
+//	@Success	200		{object}	util.DataResponse{data=LoginResponsePayload}	"Login response"
 //	@Failure	400		{object}	util.ErrorResponse
 //	@Failure	500		{object}	util.ErrorResponse
 //	@Router		/authentication/login [post]
@@ -318,8 +318,8 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 //	@Tags		authentication
 //	@Accept		json
 //	@Produce	json
-//	@Param		payload	body		RefreshTokenRequestPayload	true	"Refresh token"
-//	@Success	200		{object}	RefreshTokenResponsePayload	"New access token"
+//	@Param		payload	body		RefreshTokenRequestPayload							true	"Refresh token"
+//	@Success	200		{object}	util.DataResponse{data=RefreshTokenResponsePayload}	"New access token"
 //	@Failure	400		{object}	util.ErrorResponse
 //	@Failure	401		{object}	util.ErrorResponse
 //	@Failure	500		{object}	util.ErrorResponse

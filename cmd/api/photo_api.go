@@ -49,11 +49,11 @@ type PhotoCommentResponsePayload struct {
 //	@Tags			photos
 //	@Accept			json
 //	@Produce		json
-//	@Param			postID	path		int									true	"Post ID"
-//	@Param			payload	body		CreatePhotoCommentRequestPayload	true	"Comment"
-//	@Success		201		{object}	CreatePhotoCommentResponsePayload	"Comment created"
-//	@Failure		400		{object}	error
-//	@Failure		500		{object}	error
+//	@Param			postID	path		int															true	"Post ID"
+//	@Param			payload	body		CreatePhotoCommentRequestPayload							true	"Comment"
+//	@Success		201		{object}	util.DataResponse{data=CreatePhotoCommentResponsePayload}	"Comment created"
+//	@Failure		400		{object}	util.ErrorResponse
+//	@Failure		500		{object}	util.ErrorResponse
 //	@Security		ApiKeyAuth
 //	@Router			/photos/{postID}/create-comment [post]
 func (app *application) createCommentForPostHandler(w http.ResponseWriter, r *http.Request) {
@@ -97,9 +97,9 @@ func (app *application) createCommentForPostHandler(w http.ResponseWriter, r *ht
 //	@Produce		json
 //	@Param			limit	query		int	false	"Limit"
 //	@Param			offset	query		int	false	"Offset"
-//	@Success		200		{object}	PhotoPostResponsePayload
-//	@Failure		400		{object}	error
-//	@Failure		500		{object}	error
+//	@Success		200		{object}	util.DataResponse{data=PhotoPostResponsePayload}
+//	@Failure		400		{object}	util.ErrorResponse
+//	@Failure		500		{object}	util.ErrorResponse
 //	@Security		ApiKeyAuth
 //	@Router			/photos [get]
 func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request) {
@@ -176,9 +176,9 @@ func (app *application) getPhotosHandler(w http.ResponseWriter, r *http.Request)
 //	@Accept			json
 //	@Produce		json
 //	@Param			postID	path		int	true	"Post ID"
-//	@Success		200		{object}	[]PhotoCommentResponsePayload
-//	@Failure		400		{object}	error
-//	@Failure		500		{object}	error
+//	@Success		200		{object}	util.DataResponse{data=[]PhotoCommentResponsePayload}
+//	@Failure		400		{object}	util.ErrorResponse
+//	@Failure		500		{object}	util.ErrorResponse
 //	@Security		ApiKeyAuth
 //	@Router			/photos/{postID}/comments [get]
 func (app *application) getCommentsByPostID(w http.ResponseWriter, r *http.Request) {
