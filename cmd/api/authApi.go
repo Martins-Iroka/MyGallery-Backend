@@ -25,49 +25,6 @@ type RegisterUserResponsePayload struct {
 	Token   string `json:"token"`
 }
 
-type VerifyUserRequestPayload struct {
-	Code    string `json:"code" validate:"required,len=6"`
-	EmailId string `json:"email_id" validate:"required"`
-	Token   string `json:"token" validate:"required"`
-}
-
-type VerifyUserResponsePayload struct {
-	Status string `json:"status"`
-}
-
-type LoginUserRequestPayload struct {
-	Email    string `json:"email" validate:"required,email,max=255"`
-	Password string `json:"password" validate:"required,min=5,max=72"`
-}
-
-type LoginResponsePayload struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-	ExpiresIn    int64  `json:"expires_in"`
-	UserID       int64  `json:"user_id"`
-}
-
-type RefreshTokenRequestPayload struct {
-	RefreshToken string `json:"refresh_token" validate:"required"`
-}
-
-type RefreshTokenResponsePayload struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn   int64  `json:"expires_in"`
-}
-
-type LogoutRequestPayload struct {
-	RefreshToken string `json:"refresh_token" validate:"required"`
-}
-
-type ResendOTPRequestPayload struct {
-	Email string `json:"email" validate:"required,email,max=255"`
-}
-
-type ResendOTPResponsePayload struct {
-	EmailID string `json:"email_id"`
-}
-
 // RegisterUserHandler godoc
 //
 //	@summary		Registers a user
@@ -143,6 +100,14 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+type ResendOTPRequestPayload struct {
+	Email string `json:"email" validate:"required,email,max=255"`
+}
+
+type ResendOTPResponsePayload struct {
+	EmailID string `json:"email_id"`
+}
+
 // ResendOTPHandler godoc
 //
 //	@summary	Resend OTP
@@ -180,6 +145,16 @@ func (app *application) resendOTPHandler(w http.ResponseWriter, r *http.Request)
 		}
 	}
 
+}
+
+type VerifyUserRequestPayload struct {
+	Code    string `json:"code" validate:"required,len=6"`
+	EmailId string `json:"email_id" validate:"required"`
+	Token   string `json:"token" validate:"required"`
+}
+
+type VerifyUserResponsePayload struct {
+	Status string `json:"status"`
 }
 
 // VerifyUserHandler godoc
@@ -227,6 +202,18 @@ func (app *application) verifyUserHandler(w http.ResponseWriter, r *http.Request
 	if err := util.JsonResponse(w, http.StatusOK, verifyUserResponse); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
+}
+
+type LoginUserRequestPayload struct {
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,min=5,max=72"`
+}
+
+type LoginResponsePayload struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpiresIn    int64  `json:"expires_in"`
+	UserID       int64  `json:"user_id"`
 }
 
 // LoginUserHandler godoc
@@ -312,6 +299,15 @@ func (app *application) loginUserHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
+type RefreshTokenRequestPayload struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
+}
+
+type RefreshTokenResponsePayload struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
+}
+
 // RefreshTokenHandler godoc
 //
 //	@Summary	Refresh access token
@@ -374,6 +370,10 @@ func (app *application) refreshTokenHandler(w http.ResponseWriter, r *http.Reque
 	if err := util.JsonResponse(w, http.StatusOK, response); err != nil {
 		util.InternalServerErrorResponse(w, r, err, app.logger)
 	}
+}
+
+type LogoutRequestPayload struct {
+	RefreshToken string `json:"refresh_token" validate:"required"`
 }
 
 // LogoutHandler godoc
